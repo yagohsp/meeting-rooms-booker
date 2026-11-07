@@ -99,21 +99,33 @@ export async function cancelBooking(
   if (!user) return { error: "Entre como um usuário para cancelar." };
 
   const bookingId = formString(formData, "bookingId");
-  const booking = bookingId
-    ? await prisma.booking.findUnique({
-        where: { id: bookingId },
-        select: { userId: true, startsAt: true, cancelledAt: true },
-      })
-    : null;
+  const findBooking = () =>
+    prisma.booking.findUnique({
+      where: { id: bookingId },
+      select: { userId: true, startsAt: true, cancelledAt: true },
+    });
 
-  const decision = canCancelBooking(user, booking, new Date());
+  const now = new Date();
+  const decision = canCancelBooking(user, await findBooking(), now);
   if (!decision.ok) return { error: CANCEL_ERRORS[decision.reason] };
 
+  // The rule is repeated in the filter so the update is atomic: if the booking
+  // started or was cancelled after the check, nothing is updated.
   const { count } = await prisma.booking.updateMany({
-    where: { id: bookingId, userId: user.id, cancelledAt: null },
-    data: { cancelledAt: new Date() },
+    where: {
+      id: bookingId,
+      userId: user.id,
+      cancelledAt: null,
+      startsAt: { gt: now },
+    },
+    data: { cancelledAt: now },
   });
-  if (count === 0) return { error: CANCEL_ERRORS.ALREADY_CANCELLED };
+  if (count === 0) {
+    const current = canCancelBooking(user, await findBooking(), new Date());
+    return {
+      error: CANCEL_ERRORS[current.ok ? "ALREADY_CANCELLED" : current.reason],
+    };
+  }
 
   revalidatePath("/minhas-reservas");
   return {};
