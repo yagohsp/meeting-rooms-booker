@@ -1,10 +1,10 @@
-import { loginAs } from "@/app/actions/session";
+import { loginAs } from "@/features/auth/actions";
 import { Button } from "@/components/ui/button";
 import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser } from "@/features/auth/session";
 import { prisma } from "@/lib/db";
 
 export async function UserSwitcher() {

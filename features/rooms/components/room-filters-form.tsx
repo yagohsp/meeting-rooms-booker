@@ -4,7 +4,7 @@ import { cn } from "cn";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { RoomFilters } from "@/lib/rooms/filters";
+import type { RoomFilters } from "@/features/rooms/filters";
 
 type Props = {
   filters: RoomFilters;
