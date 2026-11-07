@@ -14,14 +14,22 @@ export async function UserSwitcher() {
   ]);
 
   return (
-    <form action={loginAs} className="flex items-center gap-2 text-sm">
+    <form
+      action={loginAs}
+      className="flex w-full items-center gap-2 text-sm sm:w-auto"
+    >
       <label
         htmlFor="userId"
         className="whitespace-nowrap text-muted-foreground"
       >
         Entrar como
       </label>
-      <NativeSelect id="userId" name="userId" defaultValue={current?.id ?? ""}>
+      <NativeSelect
+        id="userId"
+        name="userId"
+        defaultValue={current?.id ?? ""}
+        className="min-w-0 flex-1 sm:w-48 sm:flex-none"
+      >
         <NativeSelectOption value="">Ninguém</NativeSelectOption>
         {users.map((user) => (
           <NativeSelectOption key={user.id} value={user.id}>
