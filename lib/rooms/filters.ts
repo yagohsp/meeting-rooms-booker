@@ -1,3 +1,4 @@
+import { z } from "zod";
 import type { Prisma } from "@/lib/generated/prisma/client";
 
 export type RoomFilters = {
@@ -7,26 +8,23 @@ export type RoomFilters = {
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
-const toArray = (value: string | string[] | undefined) =>
-  value === undefined ? [] : Array.isArray(value) ? value : [value];
+const first = (value: unknown) => (Array.isArray(value) ? value[0] : value);
+const list = (value: unknown) => (value === undefined ? [] : [value].flat());
+
+const roomFiltersSchema = z.object({
+  capacidade: z
+    .preprocess(first, z.coerce.number().int().positive())
+    .optional()
+    .catch(undefined),
+  recurso: z
+    .preprocess(list, z.array(z.string().trim()))
+    .transform((names) => [...new Set(names.filter(Boolean))])
+    .catch([]),
+});
 
 export function parseRoomFilters(searchParams: SearchParams): RoomFilters {
-  const [rawCapacity] = toArray(searchParams.capacidade);
-  const capacity = Number(rawCapacity);
-  const minCapacity =
-    rawCapacity && Number.isInteger(capacity) && capacity > 0
-      ? capacity
-      : undefined;
-
-  const resources = [
-    ...new Set(
-      toArray(searchParams.recurso)
-        .map((name) => name.trim())
-        .filter(Boolean),
-    ),
-  ];
-
-  return { minCapacity, resources };
+  const { capacidade, recurso } = roomFiltersSchema.parse(searchParams);
+  return { minCapacity: capacidade, resources: recurso };
 }
 
 export function buildRoomWhere(filters: RoomFilters): Prisma.RoomWhereInput {
