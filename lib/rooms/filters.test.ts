@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { buildRoomWhere, parseRoomFilters } from "./filters";
+import {
+  buildRoomWhere,
+  keepKnownResources,
+  parseRoomFilters,
+} from "./filters";
 
 describe("parseRoomFilters", () => {
   it("returns no filters for empty search params", () => {
@@ -13,7 +17,7 @@ describe("parseRoomFilters", () => {
     expect(parseRoomFilters({ capacidade: "8" }).minCapacity).toBe(8);
   });
 
-  it.each(["0", "-3", "2.5", "abc", ""])(
+  it.each(["0", "-3", "2.5", "abc", "", "0x10", "1e1", " 8 "])(
     "ignores invalid capacity %j",
     (capacidade) => {
       expect(parseRoomFilters({ capacidade }).minCapacity).toBeUndefined();
@@ -32,6 +36,25 @@ describe("parseRoomFilters", () => {
       parseRoomFilters({ recurso: ["Projetor", " TV ", "Projetor", ""] })
         .resources,
     ).toEqual(["Projetor", "TV"]);
+  });
+});
+
+describe("keepKnownResources", () => {
+  it("drops resources that do not exist", () => {
+    expect(
+      keepKnownResources(
+        { minCapacity: 4, resources: ["Projetor", "Inexistente", "TV"] },
+        ["Projetor", "TV", "Quadro branco"],
+      ),
+    ).toEqual({ minCapacity: 4, resources: ["Projetor", "TV"] });
+  });
+
+  it("limits the filter to the known resources", () => {
+    const resources = Array.from({ length: 1000 }, (_, i) => `R${i}`);
+    expect(keepKnownResources({ resources }, ["R1", "R2"]).resources).toEqual([
+      "R1",
+      "R2",
+    ]);
   });
 });
 

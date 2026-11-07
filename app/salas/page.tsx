@@ -3,29 +3,34 @@ import Link from "next/link";
 import { RoomCard } from "@/components/rooms/room-card";
 import { RoomFiltersForm } from "@/components/rooms/room-filters-form";
 import { prisma } from "@/lib/db";
-import { buildRoomWhere, parseRoomFilters } from "@/lib/rooms/filters";
+import {
+  buildRoomWhere,
+  keepKnownResources,
+  parseRoomFilters,
+} from "@/lib/rooms/filters";
 
 export const metadata: Metadata = { title: "Salas" };
 
 export default async function RoomsPage({ searchParams }: PageProps<"/salas">) {
-  const filters = parseRoomFilters(await searchParams);
+  const resources = await prisma.resource.findMany({
+    select: { id: true, name: true },
+    orderBy: { name: "asc" },
+  });
+  const filters = keepKnownResources(
+    parseRoomFilters(await searchParams),
+    resources.map((resource) => resource.name),
+  );
 
-  const [rooms, resources] = await Promise.all([
-    prisma.room.findMany({
-      where: buildRoomWhere(filters),
-      orderBy: [{ capacity: "asc" }, { name: "asc" }],
-      include: {
-        resources: {
-          select: { resource: { select: { name: true } } },
-          orderBy: { resource: { name: "asc" } },
-        },
+  const rooms = await prisma.room.findMany({
+    where: buildRoomWhere(filters),
+    orderBy: [{ capacity: "asc" }, { name: "asc" }],
+    include: {
+      resources: {
+        select: { resource: { select: { name: true } } },
+        orderBy: { resource: { name: "asc" } },
       },
-    }),
-    prisma.resource.findMany({
-      select: { id: true, name: true },
-      orderBy: { name: "asc" },
-    }),
-  ]);
+    },
+  });
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6">

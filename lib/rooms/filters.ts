@@ -13,7 +13,10 @@ const list = (value: unknown) => (value === undefined ? [] : [value].flat());
 
 const roomFiltersSchema = z.object({
   capacidade: z
-    .preprocess(first, z.coerce.number().int().positive())
+    .preprocess(
+      first,
+      z.string().regex(/^\d+$/).transform(Number).pipe(z.number().positive()),
+    )
     .optional()
     .catch(undefined),
   recurso: z
@@ -27,9 +30,22 @@ export function parseRoomFilters(searchParams: SearchParams): RoomFilters {
   return { minCapacity: capacidade, resources: recurso };
 }
 
+export function keepKnownResources(
+  filters: RoomFilters,
+  knownResources: string[],
+): RoomFilters {
+  const known = new Set(knownResources);
+  return {
+    ...filters,
+    resources: filters.resources.filter((name) => known.has(name)),
+  };
+}
+
 export function buildRoomWhere(filters: RoomFilters): Prisma.RoomWhereInput {
   return {
-    ...(filters.minCapacity && { capacity: { gte: filters.minCapacity } }),
+    ...(filters.minCapacity !== undefined && {
+      capacity: { gte: filters.minCapacity },
+    }),
     AND: filters.resources.map((name) => ({
       resources: { some: { resource: { name } } },
     })),
