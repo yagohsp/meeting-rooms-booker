@@ -32,7 +32,7 @@ Para recriar o banco do zero: `npm run db:reset`.
 
 ## Decisões
 
-- **Autenticação**: ainda não há provedor de identidade. O seletor "entrar como" grava apenas o id do usuário num cookie `httpOnly`; o papel (admin ou comum) é sempre lido do banco e toda permissão é verificada no servidor. A integração com um provedor real fica restrita a `lib/auth.ts`.
+- **Autenticação**: ainda não há provedor de identidade. O seletor "entrar como" grava apenas o id do usuário num cookie `httpOnly`; o papel (admin ou comum) é sempre lido do banco e toda permissão é verificada no servidor. Como não há senha, qualquer pessoa pode se passar por outro usuário, inclusive o admin, então o sistema deve rodar apenas em rede interna. Integrar um provedor real substitui `lib/auth.ts`, a action `loginAs` e o seletor de usuário; o restante do código depende apenas de `getCurrentUser()`.
 - **Recursos das salas** ficam numa tabela própria (N:N), já que o SQLite não tem arrays e o filtro por recurso fica simples.
 - **Cancelamento lógico** (`cancelledAt`): mantém o histórico e reservas canceladas não contam na sobreposição.
 - **Branches `chore/`**: além de `feature/SALA-n`, `hotfix/` e `release/`, tarefas de infraestrutura usam `chore/`.
