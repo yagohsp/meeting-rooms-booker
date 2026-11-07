@@ -36,3 +36,22 @@ export function listRoomOptions() {
     orderBy: { name: "asc" },
   });
 }
+
+export async function getRoomForEdit(id: string) {
+  const room = await prisma.room.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      name: true,
+      capacity: true,
+      resources: { select: { resourceId: true } },
+    },
+  });
+  if (!room) return null;
+  return {
+    id: room.id,
+    name: room.name,
+    capacity: room.capacity,
+    resourceIds: room.resources.map(({ resourceId }) => resourceId),
+  };
+}
