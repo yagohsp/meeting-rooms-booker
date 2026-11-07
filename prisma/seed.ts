@@ -1,5 +1,6 @@
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { PrismaClient } from "../lib/generated/prisma/client";
+import { todayInSaoPaulo, zonedDateTimeToUtc } from "../lib/time";
 
 const prisma = new PrismaClient({
   adapter: new PrismaBetterSqlite3({
@@ -36,9 +37,9 @@ const USERS = [
   { name: "Yago Santos", role: "ADMIN" },
 ] as const;
 
-// Returns the n-th business day after today (America/Sao_Paulo, UTC-3) as YYYY-MM-DD.
+// Returns the n-th business day after today in São Paulo as YYYY-MM-DD.
 function nextBusinessDay(n: number): string {
-  const day = new Date(Date.now() - 3 * 60 * 60 * 1000);
+  const day = new Date(`${todayInSaoPaulo()}T12:00:00Z`);
   let found = 0;
   while (found < n) {
     day.setUTCDate(day.getUTCDate() + 1);
@@ -47,8 +48,6 @@ function nextBusinessDay(n: number): string {
   }
   return day.toISOString().slice(0, 10);
 }
-
-const at = (date: string, time: string) => new Date(`${date}T${time}:00-03:00`);
 
 async function main() {
   await prisma.booking.deleteMany();
@@ -92,20 +91,20 @@ async function main() {
       {
         roomId: rooms.get("Sala Diamante")!,
         userId: users.get("Daiane Pereira")!,
-        startsAt: at(d1, "10:00"),
-        endsAt: at(d1, "11:00"),
+        startsAt: zonedDateTimeToUtc(d1, "10:00"),
+        endsAt: zonedDateTimeToUtc(d1, "11:00"),
       },
       {
         roomId: rooms.get("Sala Cristal")!,
         userId: users.get("Bruno Lima")!,
-        startsAt: at(d1, "14:00"),
-        endsAt: at(d1, "15:30"),
+        startsAt: zonedDateTimeToUtc(d1, "14:00"),
+        endsAt: zonedDateTimeToUtc(d1, "15:30"),
       },
       {
         roomId: rooms.get("Sala Berilo")!,
         userId: users.get("Daiane Pereira")!,
-        startsAt: at(d2, "09:00"),
-        endsAt: at(d2, "10:00"),
+        startsAt: zonedDateTimeToUtc(d2, "09:00"),
+        endsAt: zonedDateTimeToUtc(d2, "10:00"),
       },
     ],
   });
