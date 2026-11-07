@@ -16,6 +16,7 @@ export async function loginAs(formData: FormData) {
     if (!user) throw new Error("USER_NOT_FOUND");
     store.set(SESSION_COOKIE, user.id, {
       httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
     });
