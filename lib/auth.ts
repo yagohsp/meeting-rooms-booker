@@ -1,8 +1,6 @@
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/db";
 
-// No real login (allowed by the challenge): the cookie only identifies the
-// user picked in "entrar como". The role always comes from the database.
 export const SESSION_COOKIE = "uid";
 
 export async function getCurrentUser() {
