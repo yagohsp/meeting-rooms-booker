@@ -29,7 +29,7 @@ export function RoomForm({ action, resources, initialValues }: Props) {
   const errors = state.status === "error" ? state.errors : {};
 
   return (
-    <form action={formAction} className="flex flex-col gap-5">
+    <form action={formAction} noValidate className="flex flex-col gap-5">
       {errors.form && (
         <ul
           role="alert"

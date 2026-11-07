@@ -18,6 +18,38 @@ type Props = {
 
 const initialState: CreateBookingState = { status: "idle" };
 
+function formatTime(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 4);
+  return digits.length > 2
+    ? `${digits.slice(0, 2)}:${digits.slice(2)}`
+    : digits;
+}
+
+function clampTime(value: string) {
+  const match = /^(\d{2}):(\d{2})$/.exec(value);
+  if (!match) return value;
+  const hours = Math.min(Number(match[1]), 23);
+  const minutes = Math.min(Number(match[2]), 59);
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+}
+
+const timeInputProps = {
+  type: "text",
+  inputMode: "numeric",
+  placeholder: "00:00",
+  maxLength: 5,
+  pattern: "([01][0-9]|2[0-3]):[0-5][0-9]",
+  title: "Use o formato 00:00 a 23:59",
+  required: true,
+  autoComplete: "off",
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.currentTarget.value = formatTime(event.currentTarget.value);
+  },
+  onBlur: (event: React.FocusEvent<HTMLInputElement>) => {
+    event.currentTarget.value = clampTime(event.currentTarget.value);
+  },
+} as const;
+
 function FieldError({ messages }: { messages?: string[] }) {
   if (!messages?.length) return null;
   return <p className="text-sm text-destructive">{messages[0]}</p>;
@@ -29,7 +61,7 @@ export function BookingForm({ rooms, defaultRoomId, today }: Props) {
   const errors = state.status === "error" ? state.errors : {};
 
   return (
-    <form action={action} className="flex flex-col gap-5">
+    <form action={action} noValidate className="flex flex-col gap-5">
       {state.status === "success" && (
         <p
           role="status"
@@ -91,9 +123,7 @@ export function BookingForm({ rooms, defaultRoomId, today }: Props) {
           <Input
             id="start"
             name="start"
-            type="time"
-            required
-            step={300}
+            {...timeInputProps}
             defaultValue={values?.start}
             aria-invalid={!!errors.start}
           />
@@ -104,9 +134,7 @@ export function BookingForm({ rooms, defaultRoomId, today }: Props) {
           <Input
             id="end"
             name="end"
-            type="time"
-            required
-            step={300}
+            {...timeInputProps}
             defaultValue={values?.end}
             aria-invalid={!!errors.end}
           />
