@@ -26,8 +26,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
-        <header className="flex items-center justify-between border-b border-zinc-200 px-6 py-3 dark:border-zinc-800">
-          <Link href="/" className="font-semibold">
+        <header className="flex items-center justify-between gap-4 border-b-2 border-brand-accent px-6 py-3">
+          <Link
+            href="/"
+            className="font-semibold whitespace-nowrap text-primary"
+          >
             Reserva de Salas
           </Link>
           <UserSwitcher />
