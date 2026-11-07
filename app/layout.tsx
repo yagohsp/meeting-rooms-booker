@@ -5,7 +5,7 @@ import { fontVariables } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Reserva de Salas",
+  title: { default: "Reserva de Salas", template: "%s | Reserva de Salas" },
   description: "Sistema interno para reservar salas de reunião",
 };
 
