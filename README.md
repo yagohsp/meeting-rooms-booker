@@ -37,22 +37,8 @@ Para recriar o banco do zero: `npm run db:reset`.
 - **Cancelamento lógico** (`cancelledAt`): mantém o histórico e reservas canceladas não contam na sobreposição.
 - **Branches `chore/`**: além de `feature/SALA-n`, `hotfix/` e `release/`, tarefas de infraestrutura usam `chore/`.
 
-## Git flow
-
-_A preencher._
-
 ## Testes
 
 ```bash
 npm test
 ```
-
-_A preencher._
-
-## Produção na AWS
-
-_A preencher._
-
-## O que ficou de fora
-
-_A preencher._
