@@ -9,7 +9,6 @@ describe("todayInSaoPaulo", () => {
   });
 
   it("uses São Paulo time, not UTC, near midnight", () => {
-    // 01:30 UTC on the 8th is still 22:30 on the 7th in São Paulo.
     expect(todayInSaoPaulo(new Date("2026-11-08T01:30:00Z"))).toBe(
       "2026-11-07",
     );
@@ -24,7 +23,6 @@ describe("zonedDateTimeToUtc", () => {
   });
 
   it("follows daylight saving time when the zone has it", () => {
-    // Brazil observed DST (UTC-2) in December 2018.
     expect(zonedDateTimeToUtc("2018-12-01", "09:00")).toEqual(
       new Date("2018-12-01T11:00:00Z"),
     );

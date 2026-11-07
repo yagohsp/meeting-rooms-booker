@@ -20,9 +20,6 @@ function NativeSelect({
       data-slot="native-select-wrapper"
       data-size={size}
     >
-      {/* React does not apply a new defaultValue to a mounted <select>, so it
-          keeps a stale option after a form action resets the form. Remounting
-          when the default changes keeps it in sync. */}
       <select
         key={String(props.defaultValue ?? "")}
         data-slot="native-select"

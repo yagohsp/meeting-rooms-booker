@@ -15,7 +15,6 @@ export function RoomFiltersForm({ filters, resources }: Props) {
   return (
     <Form
       action="/salas"
-      // Remount when the URL changes so uncontrolled inputs reflect it.
       key={JSON.stringify(filters)}
       className="flex flex-col gap-5"
     >

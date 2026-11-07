@@ -10,7 +10,6 @@ export type BookingError =
   | { code: "TOO_LONG"; maxMinutes: number }
   | { code: "OVERLAP"; conflict: Interval };
 
-// Half-open intervals [startsAt, endsAt): back-to-back bookings do not overlap.
 export function overlaps(a: Interval, b: Interval): boolean {
   return a.startsAt < b.endsAt && b.startsAt < a.endsAt;
 }

@@ -10,7 +10,6 @@ function createClient() {
   return new PrismaClient({ adapter });
 }
 
-// Reuse the client across hot reloads in development.
 export const prisma = globalForPrisma.prisma ?? createClient();
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
