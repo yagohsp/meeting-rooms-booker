@@ -38,8 +38,6 @@ function offsetMinutes(instant: Date, timeZone: string) {
   return sign * (Number(match[2]) * 60 + Number(match[3]));
 }
 
-// Converts a wall-clock date and time in the given time zone to a UTC instant,
-// following the zone's offset on that date (including daylight saving time).
 export function zonedDateTimeToUtc(
   date: string,
   time: string,

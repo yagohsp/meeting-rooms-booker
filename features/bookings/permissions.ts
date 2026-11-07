@@ -16,7 +16,6 @@ export function canCancelBooking(
   booking: CancelableBooking | null,
   now: Date,
 ): CancelDecision {
-  // Someone else's booking is reported as missing, so its existence is not revealed.
   if (!booking || booking.userId !== user.id) {
     return { ok: false, reason: "NOT_FOUND" };
   }

@@ -37,7 +37,6 @@ const USERS = [
   { name: "Yago Santos", role: "ADMIN" },
 ] as const;
 
-// Returns the n-th business day after today in São Paulo as YYYY-MM-DD.
 function nextBusinessDay(n: number): string {
   const day = new Date(`${todayInSaoPaulo()}T12:00:00Z`);
   let found = 0;

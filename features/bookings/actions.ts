@@ -109,8 +109,6 @@ export async function cancelBooking(
   const decision = canCancelBooking(user, await findBooking(), now);
   if (!decision.ok) return { error: CANCEL_ERRORS[decision.reason] };
 
-  // The rule is repeated in the filter so the update is atomic: if the booking
-  // started or was cancelled after the check, nothing is updated.
   const { count } = await prisma.booking.updateMany({
     where: {
       id: bookingId,
