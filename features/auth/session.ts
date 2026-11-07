@@ -1,6 +1,7 @@
 import "server-only";
 
 import { cookies } from "next/headers";
+import { notFound } from "next/navigation";
 import { cache } from "react";
 import { prisma } from "@/lib/db";
 
@@ -15,8 +16,12 @@ export const getCurrentUser = cache(async () => {
   });
 });
 
+export function isAdmin(user: { role: string } | null) {
+  return user?.role === "ADMIN";
+}
+
 export async function requireAdmin() {
   const user = await getCurrentUser();
-  if (user?.role !== "ADMIN") throw new Error("FORBIDDEN");
+  if (!user || !isAdmin(user)) notFound();
   return user;
 }
