@@ -33,7 +33,7 @@ export function BookingForm({ rooms, defaultRoomId, today }: Props) {
       {state.status === "success" && (
         <p
           role="status"
-          className="rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm"
+          className="rounded-lg border border-primary/40 bg-primary/10 p-3 text-sm"
         >
           {state.message}
         </p>

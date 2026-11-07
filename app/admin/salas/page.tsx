@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Eyebrow } from "@/components/eyebrow";
 import Link from "next/link";
 import { cn } from "cn";
 import { buttonVariants } from "@/components/ui/button";
@@ -14,13 +15,16 @@ export default async function AdminRoomsPage() {
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6">
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold">Administrar salas</h1>
+        <div className="flex flex-col gap-2">
+          <Eyebrow>Administração</Eyebrow>
+          <h1 className="text-3xl font-medium tracking-tight">Salas</h1>
+        </div>
         <Link href="/admin/salas/nova" className={cn(buttonVariants())}>
           Nova sala
         </Link>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border">
+      <div className="overflow-x-auto rounded-xl border bg-card shadow-card">
         <table className="w-full text-sm">
           <thead className="bg-muted/50 text-left text-muted-foreground">
             <tr>
@@ -43,7 +47,7 @@ export default async function AdminRoomsPage() {
                 <td className="px-4 py-3 text-right">
                   <Link
                     href={`/admin/salas/${room.id}`}
-                    className="text-primary underline-offset-4 hover:underline"
+                    className="text-brand-link underline-offset-4 hover:underline"
                   >
                     Editar
                   </Link>

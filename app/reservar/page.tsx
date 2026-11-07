@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Eyebrow } from "@/components/eyebrow";
 import { requireUser } from "@/features/auth/session";
 import { BookingForm } from "@/features/bookings/components/booking-form";
 import { todayInSaoPaulo } from "@/lib/time";
@@ -16,7 +17,10 @@ export default async function BookingPage({
 
   return (
     <div className="mx-auto flex max-w-md flex-col gap-6">
-      <h1 className="text-2xl font-semibold">Reservar sala</h1>
+      <div className="flex flex-col gap-2">
+        <Eyebrow>Nova reserva</Eyebrow>
+        <h1 className="text-3xl font-medium tracking-tight">Reservar sala</h1>
+      </div>
       <BookingForm
         rooms={rooms}
         defaultRoomId={defaultRoomId}

@@ -16,7 +16,7 @@ export default function Error({
 
   return (
     <div className="mx-auto flex max-w-md flex-col items-center gap-4 py-16 text-center">
-      <h1 className="text-xl font-semibold">Algo deu errado</h1>
+      <h1 className="text-2xl font-medium tracking-tight">Algo deu errado</h1>
       <p className="text-muted-foreground">
         Não foi possível carregar esta página. Tente novamente em instantes.
       </p>

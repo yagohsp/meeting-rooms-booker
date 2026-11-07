@@ -17,11 +17,11 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="pt-BR" className={`${fontVariables} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
-        <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-b-2 border-brand-accent px-4 py-3 sm:px-6">
+        <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-b-4 border-brand-orange bg-brand-navbar px-4 py-4 text-white sm:px-6">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
             <Link
               href="/"
-              className="font-semibold whitespace-nowrap text-primary"
+              className="font-semibold whitespace-nowrap text-white"
             >
               Reserva de Salas
             </Link>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Eyebrow } from "@/components/eyebrow";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,7 +19,10 @@ export default async function SignInPage() {
   return (
     <Card className="mx-auto mt-8 w-full max-w-sm">
       <CardHeader>
-        <CardTitle className="text-xl">Entrar</CardTitle>
+        <Eyebrow>Reserva de salas</Eyebrow>
+        <CardTitle className="text-2xl font-medium tracking-tight">
+          Entrar
+        </CardTitle>
         <CardDescription>Escolha um usuário para continuar.</CardDescription>
       </CardHeader>
       <CardContent>

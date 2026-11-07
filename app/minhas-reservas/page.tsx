@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Eyebrow } from "@/components/eyebrow";
 import Link from "next/link";
 import { requireUser } from "@/features/auth/session";
 import { CancelBookingButton } from "@/features/bookings/components/cancel-booking-button";
@@ -22,7 +23,10 @@ export default async function MyBookingsPage() {
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6">
-      <h1 className="text-2xl font-semibold">Minhas reservas</h1>
+      <div className="flex flex-col gap-2">
+        <Eyebrow>Agenda</Eyebrow>
+        <h1 className="text-3xl font-medium tracking-tight">Minhas reservas</h1>
+      </div>
       <section
         aria-labelledby="upcoming-heading"
         className="flex flex-col gap-3"
@@ -31,7 +35,7 @@ export default async function MyBookingsPage() {
           Próximas
         </h2>
         {upcoming.length > 0 ? (
-          <ul className="flex flex-col divide-y rounded-lg border">
+          <ul className="flex flex-col divide-y rounded-xl border bg-card shadow-card">
             {upcoming.map((booking) => (
               <BookingRow
                 key={booking.id}
@@ -53,7 +57,7 @@ export default async function MyBookingsPage() {
             Nenhuma reserva futura.{" "}
             <Link
               href="/salas"
-              className="text-primary underline-offset-4 hover:underline"
+              className="text-brand-link underline-offset-4 hover:underline"
             >
               Reservar uma sala
             </Link>
@@ -74,7 +78,7 @@ export default async function MyBookingsPage() {
               Mostrando as {BOOKING_HISTORY_LIMIT} mais recentes.
             </p>
           )}
-          <ul className="flex flex-col divide-y rounded-lg border text-muted-foreground">
+          <ul className="flex flex-col divide-y rounded-xl border bg-card text-muted-foreground shadow-card">
             {history.map((booking) => (
               <BookingRow
                 key={booking.id}

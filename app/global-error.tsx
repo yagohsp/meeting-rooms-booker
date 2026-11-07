@@ -21,7 +21,9 @@ export default function GlobalError({
       <body className="flex min-h-screen items-center justify-center px-4">
         <title>Erro | Reserva de Salas</title>
         <div className="flex max-w-md flex-col items-center gap-4 text-center">
-          <h1 className="text-xl font-semibold">Algo deu errado</h1>
+          <h1 className="text-2xl font-medium tracking-tight">
+            Algo deu errado
+          </h1>
           <p className="text-muted-foreground">
             O sistema está indisponível no momento. Tente novamente em
             instantes.
