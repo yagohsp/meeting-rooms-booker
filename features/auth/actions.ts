@@ -3,13 +3,14 @@
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
+import { formString } from "@/lib/forms";
 import { SESSION_COOKIE } from "@/features/auth/session";
 
 export async function loginAs(formData: FormData) {
-  const userId = formData.get("userId");
+  const userId = formString(formData, "userId");
   const store = await cookies();
 
-  if (typeof userId !== "string" || userId === "") {
+  if (!userId) {
     store.delete(SESSION_COOKIE);
   } else {
     const user = await prisma.user.findUnique({ where: { id: userId } });

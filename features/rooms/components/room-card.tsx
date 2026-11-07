@@ -1,9 +1,13 @@
+import Link from "next/link";
+import { cn } from "cn";
 import { UsersIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -38,6 +42,14 @@ export function RoomCard({ room }: { room: RoomCardData }) {
           <p className="text-sm text-muted-foreground">Sem recursos</p>
         )}
       </CardContent>
+      <CardFooter>
+        <Link
+          href={`/reservar?sala=${room.id}`}
+          className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+        >
+          Reservar
+        </Link>
+      </CardFooter>
     </Card>
   );
 }

@@ -29,3 +29,10 @@ export async function listRooms(filters: RoomFilters) {
     resources: room.resources.map(({ resource }) => resource.name),
   }));
 }
+
+export function listRoomOptions() {
+  return prisma.room.findMany({
+    select: { id: true, name: true, capacity: true },
+    orderBy: { name: "asc" },
+  });
+}
