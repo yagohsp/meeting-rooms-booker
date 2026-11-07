@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { UserSwitcher } from "@/components/user-switcher";
+import { UserSwitcher } from "@/features/auth/components/user-switcher";
 import { fontVariables } from "./fonts";
 import "./globals.css";
 

@@ -1,36 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { RoomCard } from "@/components/rooms/room-card";
-import { RoomFiltersForm } from "@/components/rooms/room-filters-form";
-import { prisma } from "@/lib/db";
-import {
-  buildRoomWhere,
-  keepKnownResources,
-  parseRoomFilters,
-} from "@/lib/rooms/filters";
+import { RoomCard } from "@/features/rooms/components/room-card";
+import { RoomFiltersForm } from "@/features/rooms/components/room-filters-form";
+import { keepKnownResources, parseRoomFilters } from "@/features/rooms/filters";
+import { listResources, listRooms } from "@/features/rooms/queries";
 
 export const metadata: Metadata = { title: "Salas" };
 
 export default async function RoomsPage({ searchParams }: PageProps<"/salas">) {
-  const resources = await prisma.resource.findMany({
-    select: { id: true, name: true },
-    orderBy: { name: "asc" },
-  });
+  const resources = await listResources();
   const filters = keepKnownResources(
     parseRoomFilters(await searchParams),
     resources.map((resource) => resource.name),
   );
-
-  const rooms = await prisma.room.findMany({
-    where: buildRoomWhere(filters),
-    orderBy: [{ capacity: "asc" }, { name: "asc" }],
-    include: {
-      resources: {
-        select: { resource: { select: { name: true } } },
-        orderBy: { resource: { name: "asc" } },
-      },
-    },
-  });
+  const rooms = await listRooms(filters);
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6">
@@ -57,16 +40,7 @@ export default async function RoomsPage({ searchParams }: PageProps<"/salas">) {
             <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {rooms.map((room) => (
                 <li key={room.id}>
-                  <RoomCard
-                    room={{
-                      id: room.id,
-                      name: room.name,
-                      capacity: room.capacity,
-                      resources: room.resources.map(
-                        ({ resource }) => resource.name,
-                      ),
-                    }}
-                  />
+                  <RoomCard room={room} />
                 </li>
               ))}
             </ul>
