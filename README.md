@@ -12,7 +12,9 @@ npm run db:setup   # aplica as migrations e popula o banco
 npm run dev        # http://localhost:3000
 ```
 
-Use o seletor **Entrar como** no topo da página para trocar de usuário:
+## Seed
+
+Seed de usuários:
 
 | Usuário        | Papel |
 | -------------- | ----- |
@@ -29,13 +31,6 @@ Para recriar o banco do zero: `npm run db:reset`.
 - **Vitest**: rápido e compatível com TypeScript/ESM sem configuração extra.
 - **ESLint (config do Next) + Prettier**: padrão da comunidade, diffs consistentes nos PRs.
 - **GitHub Actions**: lint, formatação, typecheck, testes e build em todo PR.
-
-## Decisões
-
-- **Autenticação**: ainda não há provedor de identidade. O seletor "entrar como" grava apenas o id do usuário num cookie `httpOnly`; o papel (admin ou comum) é sempre lido do banco e toda permissão é verificada no servidor. Como não há senha, qualquer pessoa pode se passar por outro usuário, inclusive o admin, então o sistema deve rodar apenas em rede interna. Integrar um provedor real substitui `lib/auth.ts`, a action `loginAs` e o seletor de usuário; o restante do código depende apenas de `getCurrentUser()`.
-- **Recursos das salas** ficam numa tabela própria (N:N), já que o SQLite não tem arrays e o filtro por recurso fica simples.
-- **Cancelamento lógico** (`cancelledAt`): mantém o histórico e reservas canceladas não contam na sobreposição.
-- **Branches `chore/`**: além de `feature/SALA-n`, `hotfix/` e `release/`, tarefas de infraestrutura usam `chore/`.
 
 ## Testes
 
