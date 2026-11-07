@@ -7,6 +7,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { SaveRoomState } from "../actions";
+import { MAX_CAPACITY, MAX_NAME_LENGTH } from "../limits";
 import type { RoomInput } from "../schemas";
 
 type Props = {
@@ -46,7 +47,7 @@ export function RoomForm({ action, resources, initialValues }: Props) {
           id="name"
           name="name"
           required
-          maxLength={60}
+          maxLength={MAX_NAME_LENGTH}
           defaultValue={values?.name}
           aria-invalid={!!errors.name}
         />
@@ -61,7 +62,7 @@ export function RoomForm({ action, resources, initialValues }: Props) {
           type="number"
           required
           min={1}
-          max={500}
+          max={MAX_CAPACITY}
           inputMode="numeric"
           defaultValue={values?.capacity}
           aria-invalid={!!errors.capacity}

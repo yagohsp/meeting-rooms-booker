@@ -78,7 +78,6 @@ export async function saveRoom(
     return fail({ form: ["Não foi possível salvar a sala. Tente novamente."] });
   }
 
-  revalidatePath("/salas");
-  revalidatePath("/admin/salas");
+  revalidatePath("/", "layout");
   redirect("/admin/salas");
 }

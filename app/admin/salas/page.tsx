@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Administrar salas" };
 
 export default async function AdminRoomsPage() {
   await requireAdmin();
-  const rooms = await listRooms({ resources: [] });
+  const rooms = await listRooms({ resources: [] }, "name");
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6">
