@@ -6,7 +6,7 @@ const LINKS = [
   { href: "/minhas-reservas", label: "Minhas reservas" },
 ];
 
-export function SiteNav() {
+export function Navbar() {
   return (
     <nav aria-label="Principal">
       <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm">

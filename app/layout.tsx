@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SiteNav } from "@/components/site-nav";
+import { Navbar } from "@/components/navbar";
 import { UserSwitcher } from "@/features/auth/components/user-switcher";
 import { fontVariables } from "./fonts";
 import "./globals.css";
@@ -22,7 +22,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             >
               Reserva de Salas
             </Link>
-            <SiteNav />
+            <Navbar />
           </div>
           <UserSwitcher />
         </header>
