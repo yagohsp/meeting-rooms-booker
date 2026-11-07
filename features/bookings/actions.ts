@@ -69,6 +69,8 @@ export async function createBooking(
       await tx.booking.create({
         data: { roomId, userId: user.id, startsAt, endsAt },
       });
+      revalidatePath("/reservar");
+      revalidatePath("/minhas-reservas");
 
       return {
         status: "success",

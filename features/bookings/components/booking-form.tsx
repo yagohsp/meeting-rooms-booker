@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { useRouter } from "next/navigation";
+import { useActionState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +14,10 @@ import { createBooking, type CreateBookingState } from "../actions";
 type Props = {
   rooms: { id: string; name: string; capacity: number }[];
   defaultRoomId?: string;
+  defaultDate: string;
   today: string;
+  origin?: string;
+  occupancy?: React.ReactNode;
 };
 
 const initialState: CreateBookingState = { status: "idle" };
@@ -55,13 +59,42 @@ function FieldError({ messages }: { messages?: string[] }) {
   return <p className="text-sm text-destructive">{messages[0]}</p>;
 }
 
-export function BookingForm({ rooms, defaultRoomId, today }: Props) {
+export function BookingForm({
+  rooms,
+  defaultRoomId,
+  defaultDate,
+  today,
+  origin,
+  occupancy,
+}: Props) {
   const [state, action, pending] = useActionState(createBooking, initialState);
+  const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const showOccupancy = () => {
+    if (!formRef.current) return;
+    const form = new FormData(formRef.current);
+    const params = new URLSearchParams();
+    for (const [field, param] of [
+      ["roomId", "sala"],
+      ["date", "data"],
+    ]) {
+      const value = form.get(field);
+      if (typeof value === "string" && value) params.set(param, value);
+    }
+    if (origin) params.set("origem", origin);
+    router.replace(`/reservar?${params}`, { scroll: false });
+  };
   const values = state.status === "error" ? state.values : undefined;
   const errors = state.status === "error" ? state.errors : {};
 
   return (
-    <form action={action} noValidate className="flex flex-col gap-5">
+    <form
+      ref={formRef}
+      action={action}
+      noValidate
+      className="flex flex-col gap-5"
+    >
       {state.status === "success" && (
         <p
           role="status"
@@ -89,6 +122,7 @@ export function BookingForm({ rooms, defaultRoomId, today }: Props) {
           required
           defaultValue={values?.roomId ?? defaultRoomId ?? ""}
           aria-invalid={!!errors.roomId}
+          onChange={showOccupancy}
           className="w-full"
         >
           <NativeSelectOption value="" disabled>
@@ -111,11 +145,14 @@ export function BookingForm({ rooms, defaultRoomId, today }: Props) {
           type="date"
           required
           min={today}
-          defaultValue={values?.date ?? today}
+          defaultValue={values?.date ?? defaultDate}
           aria-invalid={!!errors.date}
+          onChange={showOccupancy}
         />
         <FieldError messages={errors.date} />
       </div>
+
+      {occupancy}
 
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-2">

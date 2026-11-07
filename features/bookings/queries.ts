@@ -54,3 +54,20 @@ export function listBookingHistory(userId: string, now: Date) {
     take: BOOKING_HISTORY_LIMIT,
   });
 }
+
+export function listRoomBookingsBetween(
+  roomId: string,
+  startsAt: Date,
+  endsAt: Date,
+) {
+  return prisma.booking.findMany({
+    where: {
+      roomId,
+      cancelledAt: null,
+      startsAt: { lt: endsAt },
+      endsAt: { gt: startsAt },
+    },
+    select: { startsAt: true, endsAt: true },
+    orderBy: { startsAt: "asc" },
+  });
+}
