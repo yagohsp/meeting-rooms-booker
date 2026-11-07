@@ -5,13 +5,12 @@ import { CancelBookingButton } from "@/features/bookings/components/cancel-booki
 import { formatDate, formatTimeRange } from "@/features/bookings/format";
 import {
   BOOKING_HISTORY_LIMIT,
+  type BookingListItem,
   listBookingHistory,
   listUpcomingBookings,
 } from "@/features/bookings/queries";
 
 export const metadata: Metadata = { title: "Minhas reservas" };
-
-type Booking = Awaited<ReturnType<typeof listUpcomingBookings>>[number];
 
 export default async function MyBookingsPage() {
   const user = await getCurrentUser();
@@ -109,7 +108,7 @@ function BookingRow({
   booking,
   action,
 }: {
-  booking: Booking;
+  booking: BookingListItem;
   action: React.ReactNode;
 }) {
   return (

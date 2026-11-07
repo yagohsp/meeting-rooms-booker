@@ -31,6 +31,10 @@ const bookingListSelect = {
   room: { select: { name: true } },
 } satisfies Prisma.BookingSelect;
 
+export type BookingListItem = Prisma.BookingGetPayload<{
+  select: typeof bookingListSelect;
+}>;
+
 export function listUpcomingBookings(userId: string, now: Date) {
   return prisma.booking.findMany({
     where: { userId, cancelledAt: null, endsAt: { gt: now } },
