@@ -1,7 +1,7 @@
 import "server-only";
 
 import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
 import { prisma } from "@/lib/db";
 
@@ -20,8 +20,21 @@ export function isAdmin(user: { role: string } | null) {
   return user?.role === "ADMIN";
 }
 
-export async function requireAdmin() {
+export async function requireUser() {
   const user = await getCurrentUser();
-  if (!user || !isAdmin(user)) notFound();
+  if (!user) redirect("/entrar");
   return user;
+}
+
+export async function requireAdmin() {
+  const user = await requireUser();
+  if (!isAdmin(user)) notFound();
+  return user;
+}
+
+export function listUsers() {
+  return prisma.user.findMany({
+    select: { id: true, name: true, role: true },
+    orderBy: { name: "asc" },
+  });
 }

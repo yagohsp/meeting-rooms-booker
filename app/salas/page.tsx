@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { requireUser } from "@/features/auth/session";
 import { RoomCard } from "@/features/rooms/components/room-card";
 import { RoomFiltersForm } from "@/features/rooms/components/room-filters-form";
 import { keepKnownResources, parseRoomFilters } from "@/features/rooms/filters";
@@ -8,6 +9,7 @@ import { listResources, listRooms } from "@/features/rooms/queries";
 export const metadata: Metadata = { title: "Salas" };
 
 export default async function RoomsPage({ searchParams }: PageProps<"/salas">) {
+  await requireUser();
   const resources = await listResources();
   const filters = keepKnownResources(
     parseRoomFilters(await searchParams),

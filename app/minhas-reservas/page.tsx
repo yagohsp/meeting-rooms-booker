@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getCurrentUser } from "@/features/auth/session";
+import { requireUser } from "@/features/auth/session";
 import { CancelBookingButton } from "@/features/bookings/components/cancel-booking-button";
 import { formatDate, formatTimeRange } from "@/features/bookings/format";
 import {
@@ -13,19 +13,7 @@ import {
 export const metadata: Metadata = { title: "Minhas reservas" };
 
 export default async function MyBookingsPage() {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    return (
-      <MyBookingsLayout>
-        <p className="text-muted-foreground">
-          Escolha um usuário em <strong>Entrar como</strong>, no topo da página,
-          para ver suas reservas.
-        </p>
-      </MyBookingsLayout>
-    );
-  }
-
+  const user = await requireUser();
   const now = new Date();
   const [upcoming, history] = await Promise.all([
     listUpcomingBookings(user.id, now),
@@ -33,7 +21,8 @@ export default async function MyBookingsPage() {
   ]);
 
   return (
-    <MyBookingsLayout>
+    <div className="mx-auto flex max-w-2xl flex-col gap-6">
+      <h1 className="text-2xl font-semibold">Minhas reservas</h1>
       <section
         aria-labelledby="upcoming-heading"
         className="flex flex-col gap-3"
@@ -100,7 +89,7 @@ export default async function MyBookingsPage() {
           </ul>
         </section>
       )}
-    </MyBookingsLayout>
+    </div>
   );
 }
 
@@ -122,14 +111,5 @@ function BookingRow({
       </div>
       {action}
     </li>
-  );
-}
-
-function MyBookingsLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-6">
-      <h1 className="text-2xl font-semibold">Minhas reservas</h1>
-      {children}
-    </div>
   );
 }

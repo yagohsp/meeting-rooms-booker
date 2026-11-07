@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar } from "@/components/navbar";
-import { UserSwitcher } from "@/features/auth/components/user-switcher";
+import { UserMenu } from "@/features/auth/components/user-menu";
+import { getCurrentUser } from "@/features/auth/session";
 import { fontVariables } from "./fonts";
 import "./globals.css";
 
@@ -10,7 +11,9 @@ export const metadata: Metadata = {
   description: "Sistema interno para reservar salas de reunião",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const user = await getCurrentUser();
+
   return (
     <html lang="pt-BR" className={`${fontVariables} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
@@ -22,9 +25,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             >
               Reserva de Salas
             </Link>
-            <Navbar />
+            {user && <Navbar />}
           </div>
-          <UserSwitcher />
+          {user && <UserMenu name={user.name} />}
         </header>
         <main className="flex-1 px-4 py-6 sm:px-6 sm:py-8">{children}</main>
       </body>
