@@ -13,7 +13,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="pt-BR" className={`${fontVariables} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
-        <header className="flex items-center justify-between gap-4 border-b-2 border-brand-accent px-6 py-3">
+        <header className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-b-2 border-brand-accent px-4 py-3 sm:px-6">
           <Link
             href="/"
             className="font-semibold whitespace-nowrap text-primary"
@@ -22,7 +22,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </Link>
           <UserSwitcher />
         </header>
-        <main className="flex-1 px-6 py-8">{children}</main>
+        <main className="flex-1 px-4 py-6 sm:px-6 sm:py-8">{children}</main>
       </body>
     </html>
   );
