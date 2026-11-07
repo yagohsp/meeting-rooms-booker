@@ -21,16 +21,32 @@ export function findOverlappingBookings(
   });
 }
 
-export function listUserBookings(userId: string) {
+export const BOOKING_HISTORY_LIMIT = 20;
+
+const bookingListSelect = {
+  id: true,
+  startsAt: true,
+  endsAt: true,
+  cancelledAt: true,
+  room: { select: { name: true } },
+} satisfies Prisma.BookingSelect;
+
+export function listUpcomingBookings(userId: string, now: Date) {
   return prisma.booking.findMany({
-    where: { userId },
-    select: {
-      id: true,
-      startsAt: true,
-      endsAt: true,
-      cancelledAt: true,
-      room: { select: { name: true } },
-    },
+    where: { userId, cancelledAt: null, endsAt: { gt: now } },
+    select: bookingListSelect,
     orderBy: { startsAt: "asc" },
+  });
+}
+
+export function listBookingHistory(userId: string, now: Date) {
+  return prisma.booking.findMany({
+    where: {
+      userId,
+      OR: [{ cancelledAt: { not: null } }, { endsAt: { lte: now } }],
+    },
+    select: bookingListSelect,
+    orderBy: { startsAt: "desc" },
+    take: BOOKING_HISTORY_LIMIT,
   });
 }

@@ -3,11 +3,15 @@ import Link from "next/link";
 import { getCurrentUser } from "@/features/auth/session";
 import { CancelBookingButton } from "@/features/bookings/components/cancel-booking-button";
 import { formatDate, formatTimeRange } from "@/features/bookings/format";
-import { listUserBookings } from "@/features/bookings/queries";
+import {
+  BOOKING_HISTORY_LIMIT,
+  listBookingHistory,
+  listUpcomingBookings,
+} from "@/features/bookings/queries";
 
 export const metadata: Metadata = { title: "Minhas reservas" };
 
-type Booking = Awaited<ReturnType<typeof listUserBookings>>[number];
+type Booking = Awaited<ReturnType<typeof listUpcomingBookings>>[number];
 
 export default async function MyBookingsPage() {
   const user = await getCurrentUser();
@@ -24,13 +28,10 @@ export default async function MyBookingsPage() {
   }
 
   const now = new Date();
-  const bookings = await listUserBookings(user.id);
-  const upcoming = bookings.filter(
-    (booking) => !booking.cancelledAt && booking.endsAt > now,
-  );
-  const history = bookings
-    .filter((booking) => booking.cancelledAt || booking.endsAt <= now)
-    .reverse();
+  const [upcoming, history] = await Promise.all([
+    listUpcomingBookings(user.id, now),
+    listBookingHistory(user.id, now),
+  ]);
 
   return (
     <MyBookingsLayout>
@@ -80,6 +81,11 @@ export default async function MyBookingsPage() {
           <h2 id="history-heading" className="text-lg font-semibold">
             Anteriores e canceladas
           </h2>
+          {history.length === BOOKING_HISTORY_LIMIT && (
+            <p className="text-sm text-muted-foreground">
+              Mostrando as {BOOKING_HISTORY_LIMIT} mais recentes.
+            </p>
+          )}
           <ul className="flex flex-col divide-y rounded-lg border text-muted-foreground">
             {history.map((booking) => (
               <BookingRow
