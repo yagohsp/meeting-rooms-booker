@@ -1,5 +1,4 @@
 export const MIN_DURATION_MINUTES = 15;
-export const MAX_DURATION_MINUTES = 4 * 60;
 
 export type Interval = { startsAt: Date; endsAt: Date };
 
@@ -31,11 +30,17 @@ export function checkBookingTimes(
   if (minutes < MIN_DURATION_MINUTES) {
     errors.push({ code: "TOO_SHORT", minMinutes: MIN_DURATION_MINUTES });
   }
-  if (minutes > MAX_DURATION_MINUTES) {
-    errors.push({ code: "TOO_LONG", maxMinutes: MAX_DURATION_MINUTES });
-  }
 
   return errors;
+}
+
+export function checkMaxDuration(
+  requested: Interval,
+  maxMinutes: number,
+): BookingError[] {
+  const minutes =
+    (requested.endsAt.getTime() - requested.startsAt.getTime()) / 60_000;
+  return minutes > maxMinutes ? [{ code: "TOO_LONG", maxMinutes }] : [];
 }
 
 export function checkOverlap(

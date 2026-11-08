@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { todayInSaoPaulo, zonedDateTimeToUtc } from "./time";
+import { formatDuration, todayInSaoPaulo, zonedDateTimeToUtc } from "./time";
 
 describe("todayInSaoPaulo", () => {
   it("returns the São Paulo date as YYYY-MM-DD", () => {
@@ -32,5 +32,17 @@ describe("zonedDateTimeToUtc", () => {
     expect(zonedDateTimeToUtc("2026-01-15", "09:00", "Europe/Lisbon")).toEqual(
       new Date("2026-01-15T09:00:00Z"),
     );
+  });
+});
+
+describe("formatDuration", () => {
+  it.each([
+    [15, "15 minutos"],
+    [60, "1 hora"],
+    [90, "1h30"],
+    [240, "4 horas"],
+    [1440, "24 horas"],
+  ])("formats %i minutes as %j", (minutes, expected) => {
+    expect(formatDuration(minutes)).toBe(expected);
   });
 });

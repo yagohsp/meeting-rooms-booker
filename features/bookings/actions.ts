@@ -9,7 +9,7 @@ import { formatDate, formatTimeRange } from "./format";
 import { bookingErrorMessage } from "./messages";
 import { canCancelBooking } from "./permissions";
 import { findOverlappingBookings } from "./queries";
-import { checkBookingTimes, checkOverlap } from "./rules";
+import { checkBookingTimes, checkMaxDuration, checkOverlap } from "./rules";
 import { bookingInputSchema, type BookingInput } from "./schemas";
 
 export type FormErrors = Partial<Record<keyof BookingInput | "form", string[]>>;
@@ -55,16 +55,19 @@ export async function createBooking(
     result = await prisma.$transaction(async (tx) => {
       const room = await tx.room.findUnique({
         where: { id: roomId },
-        select: { name: true },
+        select: { name: true, maxDurationMinutes: true },
       });
       if (!room) return fail({ roomId: ["Sala não encontrada."] });
 
-      const conflicts = checkOverlap(
-        requested,
-        await findOverlappingBookings(tx, roomId, startsAt, endsAt),
-      );
-      if (conflicts.length > 0) {
-        return fail({ form: conflicts.map(bookingErrorMessage) });
+      const errors = [
+        ...checkMaxDuration(requested, room.maxDurationMinutes),
+        ...checkOverlap(
+          requested,
+          await findOverlappingBookings(tx, roomId, startsAt, endsAt),
+        ),
+      ];
+      if (errors.length > 0) {
+        return fail({ form: errors.map(bookingErrorMessage) });
       }
 
       await tx.booking.create({

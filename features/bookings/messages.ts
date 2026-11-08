@@ -1,3 +1,4 @@
+import { formatDuration } from "@/lib/time";
 import { formatTime } from "./format";
 import type { BookingError } from "./rules";
 
@@ -10,7 +11,7 @@ export function bookingErrorMessage(error: BookingError): string {
     case "TOO_SHORT":
       return `A reserva deve ter no mínimo ${error.minMinutes} minutos.`;
     case "TOO_LONG":
-      return `A reserva deve ter no máximo ${error.maxMinutes / 60} horas.`;
+      return `Nesta sala, a reserva deve ter no máximo ${formatDuration(error.maxMinutes)}.`;
     case "OVERLAP":
       return `A sala já está reservada das ${formatTime(error.conflict.startsAt)} às ${formatTime(error.conflict.endsAt)}.`;
   }
