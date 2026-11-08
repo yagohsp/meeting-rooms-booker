@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getCurrentUser, isAdmin } from "@/features/auth/session";
+import { countUpcomingBookingsLongerThan } from "@/features/bookings/queries";
 import { prisma } from "@/lib/db";
 import { formString } from "@/lib/forms";
 import { Prisma } from "@/lib/generated/prisma/client";
@@ -25,6 +26,7 @@ export async function saveRoom(
   const values: RoomInput = {
     name: formString(formData, "name"),
     capacity: formString(formData, "capacity"),
+    maxDurationMinutes: formString(formData, "maxDurationMinutes"),
     resourceIds: formData
       .getAll("resourceIds")
       .filter((value): value is string => typeof value === "string"),
@@ -41,7 +43,7 @@ export async function saveRoom(
 
   const parsed = roomInputSchema.safeParse(values);
   if (!parsed.success) return fail(z.flattenError(parsed.error).fieldErrors);
-  const { name, capacity, resourceIds } = parsed.data;
+  const { name, capacity, maxDurationMinutes, resourceIds } = parsed.data;
 
   try {
     await prisma.$transaction(async (tx) => {
@@ -57,12 +59,18 @@ export async function saveRoom(
           data: {
             name,
             capacity,
+            maxDurationMinutes,
             resources: { deleteMany: {}, create: resources },
           },
         });
       } else {
         await tx.room.create({
-          data: { name, capacity, resources: { create: resources } },
+          data: {
+            name,
+            capacity,
+            maxDurationMinutes,
+            resources: { create: resources },
+          },
         });
       }
     });
@@ -79,5 +87,17 @@ export async function saveRoom(
   }
 
   revalidatePath("/", "layout");
-  redirect("/admin/salas");
+
+  const exceeding = roomId
+    ? await countUpcomingBookingsLongerThan(
+        roomId,
+        maxDurationMinutes,
+        new Date(),
+      )
+    : 0;
+  redirect(
+    exceeding > 0
+      ? `/admin/salas?sala=${encodeURIComponent(name)}&excedentes=${exceeding}`
+      : "/admin/salas",
+  );
 }

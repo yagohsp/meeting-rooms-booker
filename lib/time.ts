@@ -55,3 +55,11 @@ export function addDays(date: string, days: number) {
   day.setUTCDate(day.getUTCDate() + days);
   return day.toISOString().slice(0, 10);
 }
+
+export function formatDuration(minutes: number) {
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  if (hours === 0) return `${rest} min`;
+  if (rest === 0) return `${hours}h`;
+  return `${hours}h${String(rest).padStart(2, "0")}`;
+}

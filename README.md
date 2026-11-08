@@ -32,6 +32,10 @@ Para recriar o banco do zero: `npm run db:reset`.
 - **ESLint (config do Next) + Prettier**: padrão da comunidade, diffs consistentes nos PRs.
 - **GitHub Actions**: lint, formatação, typecheck, testes e build em todo PR.
 
+## Decisões
+
+- **Reduzir a duração máxima de uma sala não altera reservas existentes.** O novo limite vale para reservas novas; as futuras que passam dele são mantidas, e o admin vê um aviso com a quantidade ao salvar.
+
 ## Testes
 
 ```bash

@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { formatDuration } from "@/lib/time";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -17,7 +18,12 @@ import {
 } from "../time-input";
 
 type Props = {
-  rooms: { id: string; name: string; capacity: number }[];
+  rooms: {
+    id: string;
+    name: string;
+    capacity: number;
+    maxDurationMinutes: number;
+  }[];
   defaultRoomId?: string;
   defaultDate: string;
   today: string;
@@ -122,7 +128,8 @@ export function BookingForm({
           </NativeSelectOption>
           {rooms.map((room) => (
             <NativeSelectOption key={room.id} value={room.id}>
-              {room.name} ({room.capacity} pessoas)
+              {room.name} ({room.capacity} pessoas, até{" "}
+              {formatDuration(room.maxDurationMinutes)})
             </NativeSelectOption>
           ))}
         </NativeSelect>
