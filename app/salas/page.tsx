@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Eyebrow } from "@/components/eyebrow";
+import { PageHeader } from "@/components/page-header";
 import Link from "next/link";
 import { requireUser } from "@/features/auth/session";
 import { RoomCard } from "@/features/rooms/components/room-card";
@@ -20,15 +20,15 @@ export default async function RoomsPage({ searchParams }: PageProps<"/salas">) {
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-6">
-      <div className="flex items-end justify-between gap-4">
-        <div className="flex flex-col gap-2">
-          <Eyebrow>Espaços</Eyebrow>
-          <h1 className="text-3xl font-medium tracking-tight">Salas</h1>
-        </div>
-        <p className="text-sm text-muted-foreground" aria-live="polite">
-          {rooms.length} {rooms.length === 1 ? "sala" : "salas"}
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="Espaços"
+        title="Salas"
+        action={
+          <p className="text-sm text-muted-foreground" aria-live="polite">
+            {rooms.length} {rooms.length === 1 ? "sala" : "salas"}
+          </p>
+        }
+      />
 
       <div className="flex flex-col gap-6 lg:flex-row lg:gap-10">
         <aside

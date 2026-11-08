@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Eyebrow } from "@/components/eyebrow";
+import { PageHeader } from "@/components/page-header";
 import Link from "next/link";
 import { requireUser } from "@/features/auth/session";
 import { CancelBookingButton } from "@/features/bookings/components/cancel-booking-button";
@@ -23,10 +23,7 @@ export default async function MyBookingsPage() {
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <Eyebrow>Agenda</Eyebrow>
-        <h1 className="text-3xl font-medium tracking-tight">Minhas reservas</h1>
-      </div>
+      <PageHeader eyebrow="Agenda" title="Minhas reservas" />
       <section
         aria-labelledby="upcoming-heading"
         className="flex flex-col gap-3"

@@ -10,6 +10,11 @@ import {
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import { createBooking, type CreateBookingState } from "../actions";
+import {
+  completeTimeInput,
+  formatTimeInput,
+  isCompleteDate,
+} from "../time-input";
 
 type Props = {
   rooms: { id: string; name: string; capacity: number }[];
@@ -22,21 +27,6 @@ type Props = {
 
 const initialState: CreateBookingState = { status: "idle" };
 
-function formatTime(value: string) {
-  const digits = value.replace(/\D/g, "").slice(0, 4);
-  return digits.length > 2
-    ? `${digits.slice(0, 2)}:${digits.slice(2)}`
-    : digits;
-}
-
-function clampTime(value: string) {
-  const match = /^(\d{2}):(\d{2})$/.exec(value);
-  if (!match) return value;
-  const hours = Math.min(Number(match[1]), 23);
-  const minutes = Math.min(Number(match[2]), 59);
-  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
-}
-
 const timeInputProps = {
   type: "text",
   inputMode: "numeric",
@@ -47,10 +37,12 @@ const timeInputProps = {
   required: true,
   autoComplete: "off",
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
-    event.currentTarget.value = formatTime(event.currentTarget.value);
+    const input = event.currentTarget;
+    if (input.selectionStart !== input.value.length) return;
+    input.value = formatTimeInput(input.value);
   },
   onBlur: (event: React.FocusEvent<HTMLInputElement>) => {
-    event.currentTarget.value = clampTime(event.currentTarget.value);
+    event.currentTarget.value = completeTimeInput(event.currentTarget.value);
   },
 } as const;
 
@@ -74,14 +66,14 @@ export function BookingForm({
   const showOccupancy = () => {
     if (!formRef.current) return;
     const form = new FormData(formRef.current);
+    const roomId = form.get("roomId");
+    const date = form.get("date");
     const params = new URLSearchParams();
-    for (const [field, param] of [
-      ["roomId", "sala"],
-      ["date", "data"],
-    ]) {
-      const value = form.get(field);
-      if (typeof value === "string" && value) params.set(param, value);
-    }
+    if (typeof roomId === "string" && roomId) params.set("sala", roomId);
+    params.set(
+      "data",
+      typeof date === "string" && isCompleteDate(date) ? date : defaultDate,
+    );
     if (origin) params.set("origem", origin);
     router.replace(`/reservar?${params}`, { scroll: false });
   };
@@ -147,7 +139,9 @@ export function BookingForm({
           min={today}
           defaultValue={values?.date ?? defaultDate}
           aria-invalid={!!errors.date}
-          onChange={showOccupancy}
+          onChange={(event) => {
+            if (isCompleteDate(event.currentTarget.value)) showOccupancy();
+          }}
         />
         <FieldError messages={errors.date} />
       </div>

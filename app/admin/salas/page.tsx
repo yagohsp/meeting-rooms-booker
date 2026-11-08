@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Eyebrow } from "@/components/eyebrow";
+import { PageHeader } from "@/components/page-header";
 import Link from "next/link";
 import { cn } from "cn";
 import { buttonVariants } from "@/components/ui/button";
@@ -14,15 +14,15 @@ export default async function AdminRoomsPage() {
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex flex-col gap-2">
-          <Eyebrow>Administração</Eyebrow>
-          <h1 className="text-3xl font-medium tracking-tight">Salas</h1>
-        </div>
-        <Link href="/admin/salas/nova" className={cn(buttonVariants())}>
-          Nova sala
-        </Link>
-      </div>
+      <PageHeader
+        eyebrow="Administração"
+        title="Salas"
+        action={
+          <Link href="/admin/salas/nova" className={cn(buttonVariants())}>
+            Nova sala
+          </Link>
+        }
+      />
 
       <div className="overflow-x-auto rounded-xl border bg-card shadow-card">
         <table className="w-full text-sm">

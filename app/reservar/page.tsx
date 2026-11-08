@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Eyebrow } from "@/components/eyebrow";
+import { PageHeader } from "@/components/page-header";
 import { requireUser } from "@/features/auth/session";
 import { BookingForm } from "@/features/bookings/components/booking-form";
 import { BackToRooms } from "@/features/rooms/components/back-to-rooms";
@@ -16,25 +16,25 @@ export default async function BookingPage({
 }: PageProps<"/reservar">) {
   await requireUser();
   const { sala, data, origem } = await searchParams;
-  const rooms = await listRoomOptions();
-  const roomId = rooms.find((room) => room.id === sala)?.id;
   const today = todayInSaoPaulo();
   const date = z.iso.date().safeParse(data).success ? (data as string) : today;
   const day = {
     startsAt: zonedDateTimeToUtc(date, "00:00"),
     endsAt: zonedDateTimeToUtc(addDays(date, 1), "00:00"),
   };
-  const bookings = roomId
-    ? await listRoomBookingsBetween(roomId, day.startsAt, day.endsAt)
-    : [];
+  const [rooms, dayBookings] = await Promise.all([
+    listRoomOptions(),
+    typeof sala === "string"
+      ? listRoomBookingsBetween(sala, day.startsAt, day.endsAt)
+      : [],
+  ]);
+  const roomId = rooms.find((room) => room.id === sala)?.id;
+  const bookings = roomId ? dayBookings : [];
 
   return (
     <div className="mx-auto flex max-w-md flex-col gap-6">
       {origem === "salas" && <BackToRooms />}
-      <div className="flex flex-col gap-2">
-        <Eyebrow>Nova reserva</Eyebrow>
-        <h1 className="text-3xl font-medium tracking-tight">Reservar sala</h1>
-      </div>
+      <PageHeader eyebrow="Nova reserva" title="Reservar sala" />
       <BookingForm
         rooms={rooms}
         defaultRoomId={roomId}
