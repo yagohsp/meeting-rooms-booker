@@ -1,0 +1,181 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useActionState, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from "@/components/ui/native-select";
+import { createBooking, type CreateBookingState } from "../actions";
+import {
+  completeTimeInput,
+  formatTimeInput,
+  isCompleteDate,
+} from "../time-input";
+
+type Props = {
+  rooms: { id: string; name: string; capacity: number }[];
+  defaultRoomId?: string;
+  defaultDate: string;
+  today: string;
+  origin?: string;
+  occupancy?: React.ReactNode;
+};
+
+const initialState: CreateBookingState = { status: "idle" };
+
+const timeInputProps = {
+  type: "text",
+  inputMode: "numeric",
+  placeholder: "00:00",
+  maxLength: 5,
+  pattern: "([01][0-9]|2[0-3]):[0-5][0-9]",
+  title: "Use o formato 00:00 a 23:59",
+  required: true,
+  autoComplete: "off",
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
+    const input = event.currentTarget;
+    if (input.selectionStart !== input.value.length) return;
+    input.value = formatTimeInput(input.value);
+  },
+  onBlur: (event: React.FocusEvent<HTMLInputElement>) => {
+    event.currentTarget.value = completeTimeInput(event.currentTarget.value);
+  },
+} as const;
+
+function FieldError({ messages }: { messages?: string[] }) {
+  if (!messages?.length) return null;
+  return <p className="text-sm text-destructive">{messages[0]}</p>;
+}
+
+export function BookingForm({
+  rooms,
+  defaultRoomId,
+  defaultDate,
+  today,
+  origin,
+  occupancy,
+}: Props) {
+  const [state, action, pending] = useActionState(createBooking, initialState);
+  const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const showOccupancy = () => {
+    if (!formRef.current) return;
+    const form = new FormData(formRef.current);
+    const roomId = form.get("roomId");
+    const date = form.get("date");
+    const params = new URLSearchParams();
+    if (typeof roomId === "string" && roomId) params.set("sala", roomId);
+    params.set(
+      "data",
+      typeof date === "string" && isCompleteDate(date) ? date : defaultDate,
+    );
+    if (origin) params.set("origem", origin);
+    router.replace(`/reservar?${params}`, { scroll: false });
+  };
+  const values = state.status === "error" ? state.values : undefined;
+  const errors = state.status === "error" ? state.errors : {};
+
+  return (
+    <form
+      ref={formRef}
+      action={action}
+      noValidate
+      className="flex flex-col gap-5"
+    >
+      {state.status === "success" && (
+        <p
+          role="status"
+          className="rounded-lg border border-primary/40 bg-primary/10 p-3 text-sm"
+        >
+          {state.message}
+        </p>
+      )}
+      {errors.form && (
+        <ul
+          role="alert"
+          className="flex flex-col gap-1 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
+        >
+          {errors.form.map((error) => (
+            <li key={error}>{error}</li>
+          ))}
+        </ul>
+      )}
+
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="roomId">Sala</Label>
+        <NativeSelect
+          id="roomId"
+          name="roomId"
+          required
+          defaultValue={values?.roomId ?? defaultRoomId ?? ""}
+          aria-invalid={!!errors.roomId}
+          onChange={showOccupancy}
+          className="w-full"
+        >
+          <NativeSelectOption value="" disabled>
+            Escolha uma sala
+          </NativeSelectOption>
+          {rooms.map((room) => (
+            <NativeSelectOption key={room.id} value={room.id}>
+              {room.name} ({room.capacity} pessoas)
+            </NativeSelectOption>
+          ))}
+        </NativeSelect>
+        <FieldError messages={errors.roomId} />
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="date">Data</Label>
+        <Input
+          id="date"
+          name="date"
+          type="date"
+          required
+          min={today}
+          defaultValue={values?.date ?? defaultDate}
+          aria-invalid={!!errors.date}
+          onChange={(event) => {
+            if (isCompleteDate(event.currentTarget.value)) showOccupancy();
+          }}
+        />
+        <FieldError messages={errors.date} />
+      </div>
+
+      {occupancy}
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="start">Início</Label>
+          <Input
+            id="start"
+            name="start"
+            {...timeInputProps}
+            defaultValue={values?.start}
+            aria-invalid={!!errors.start}
+          />
+          <FieldError messages={errors.start} />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="end">Fim</Label>
+          <Input
+            id="end"
+            name="end"
+            {...timeInputProps}
+            defaultValue={values?.end}
+            aria-invalid={!!errors.end}
+          />
+          <FieldError messages={errors.end} />
+        </div>
+      </div>
+
+      <Button type="submit" disabled={pending} className="self-start">
+        {pending ? "Reservando..." : "Reservar"}
+      </Button>
+    </form>
+  );
+}
