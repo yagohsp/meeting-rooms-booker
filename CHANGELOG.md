@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0] - 2026-11-08
+
+### Adicionado
+
+- Duração máxima de reserva definida por sala, no lugar do limite fixo de 4 horas (SALA-6).
+- Aviso ao administrador quando a redução do limite deixa reservas futuras acima dele.
+
 ## [1.0.1] - 2026-11-08
 
 ### Corrigido
