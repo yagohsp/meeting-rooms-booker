@@ -63,3 +63,27 @@ export function formatDuration(minutes: number) {
   if (rest === 0) return `${hours}h`;
   return `${hours}h${String(rest).padStart(2, "0")}`;
 }
+
+const clockFormat = new Intl.DateTimeFormat("en-US", {
+  timeZone: TIME_ZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  weekday: "short",
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+export function saoPauloClock(instant: Date) {
+  const parts = clockFormat.formatToParts(instant);
+  const get = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value ?? "";
+  return {
+    date: `${get("year")}-${get("month")}-${get("day")}`,
+    weekday: WEEKDAYS.indexOf(get("weekday")),
+    minutes: Number(get("hour")) * 60 + Number(get("minute")),
+  };
+}

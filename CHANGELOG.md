@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.1] - 2026-11-08
+
+### Corrigido
+
+- Reservas só podem ser feitas em dias úteis, das 08h às 20h (SALA-5).
+
 ## [1.0.0] - 2026-11-08
 
 ### Adicionado
