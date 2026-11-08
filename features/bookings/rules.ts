@@ -1,5 +1,9 @@
+import { saoPauloClock } from "@/lib/time";
+
 export const MIN_DURATION_MINUTES = 15;
 export const MAX_DURATION_MINUTES = 4 * 60;
+export const OPENING_MINUTES = 8 * 60;
+export const CLOSING_MINUTES = 20 * 60;
 
 export type Interval = { startsAt: Date; endsAt: Date };
 
@@ -8,10 +12,23 @@ export type BookingError =
   | { code: "IN_THE_PAST" }
   | { code: "TOO_SHORT"; minMinutes: number }
   | { code: "TOO_LONG"; maxMinutes: number }
+  | { code: "OUTSIDE_BUSINESS_HOURS" }
   | { code: "OVERLAP"; conflict: Interval };
 
 export function overlaps(a: Interval, b: Interval): boolean {
   return a.startsAt < b.endsAt && b.startsAt < a.endsAt;
+}
+
+export function isWithinBusinessHours({ startsAt, endsAt }: Interval) {
+  const start = saoPauloClock(startsAt);
+  const end = saoPauloClock(endsAt);
+  return (
+    start.date === end.date &&
+    start.weekday >= 1 &&
+    start.weekday <= 5 &&
+    start.minutes >= OPENING_MINUTES &&
+    end.minutes <= CLOSING_MINUTES
+  );
 }
 
 export function checkBookingTimes(
@@ -33,6 +50,9 @@ export function checkBookingTimes(
   }
   if (minutes > MAX_DURATION_MINUTES) {
     errors.push({ code: "TOO_LONG", maxMinutes: MAX_DURATION_MINUTES });
+  }
+  if (!isWithinBusinessHours(requested)) {
+    errors.push({ code: "OUTSIDE_BUSINESS_HOURS" });
   }
 
   return errors;

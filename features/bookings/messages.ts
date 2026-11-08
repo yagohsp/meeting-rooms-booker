@@ -11,6 +11,8 @@ export function bookingErrorMessage(error: BookingError): string {
       return `A reserva deve ter no mínimo ${error.minMinutes} minutos.`;
     case "TOO_LONG":
       return `A reserva deve ter no máximo ${error.maxMinutes / 60} horas.`;
+    case "OUTSIDE_BUSINESS_HOURS":
+      return "Reservas só podem ser feitas em dias úteis, das 08h às 20h.";
     case "OVERLAP":
       return `A sala já está reservada das ${formatTime(error.conflict.startsAt)} às ${formatTime(error.conflict.endsAt)}.`;
   }
