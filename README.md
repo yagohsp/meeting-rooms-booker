@@ -37,3 +37,17 @@ Para recriar o banco do zero: `npm run db:reset`.
 ```bash
 npm test
 ```
+
+## Produção na AWS
+
+O app roda em contêiner no **AWS App Runner**, em dois ambientes separados: **homologação**, atualizado a cada merge na `develop`, e **produção**, atualizado a cada tag de versão na `main`. Cada ambiente tem seu próprio banco **Amazon RDS for PostgreSQL**, que substitui o SQLite. Senhas e a URL do banco ficam no **AWS Secrets Manager**, separadas por ambiente, e chegam ao app como variáveis de ambiente.
+
+```mermaid
+flowchart LR
+  develop[Merge na develop] --> hml[App Runner<br/>homologação]
+  main[Tag na main] --> prd[App Runner<br/>produção]
+  hml --> dbh[(RDS PostgreSQL<br/>homologação)]
+  prd --> dbp[(RDS PostgreSQL<br/>produção)]
+  secrets[Secrets Manager] -.-> hml
+  secrets -.-> prd
+```
