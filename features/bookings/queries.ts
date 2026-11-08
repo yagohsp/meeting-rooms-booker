@@ -71,3 +71,19 @@ export function listRoomBookingsBetween(
     orderBy: { startsAt: "asc" },
   });
 }
+
+export async function countUpcomingBookingsLongerThan(
+  roomId: string,
+  maxMinutes: number,
+  now: Date,
+) {
+  const bookings = await prisma.booking.findMany({
+    where: { roomId, cancelledAt: null, endsAt: { gt: now } },
+    select: { startsAt: true, endsAt: true },
+  });
+  return bookings.filter(
+    (booking) =>
+      (booking.endsAt.getTime() - booking.startsAt.getTime()) / 60_000 >
+      maxMinutes,
+  ).length;
+}

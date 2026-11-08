@@ -1,3 +1,4 @@
+import { formatDuration } from "@/lib/time";
 import { formatTime } from "./format";
 import type { BookingError } from "./rules";
 
@@ -8,9 +9,9 @@ export function bookingErrorMessage(error: BookingError): string {
     case "IN_THE_PAST":
       return "Não é possível reservar no passado.";
     case "TOO_SHORT":
-      return `A reserva deve ter no mínimo ${error.minMinutes} minutos.`;
+      return `A reserva deve ter no mínimo ${formatDuration(error.minMinutes)}.`;
     case "TOO_LONG":
-      return `A reserva deve ter no máximo ${error.maxMinutes / 60} horas.`;
+      return `Nesta sala, a reserva deve ter no máximo ${formatDuration(error.maxMinutes)}.`;
     case "OUTSIDE_BUSINESS_HOURS":
       return "Reservas só podem ser feitas em dias úteis, das 08h às 20h.";
     case "OVERLAP":

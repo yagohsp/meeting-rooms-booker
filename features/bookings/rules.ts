@@ -1,7 +1,6 @@
 import { saoPauloClock } from "@/lib/time";
 
 export const MIN_DURATION_MINUTES = 15;
-export const MAX_DURATION_MINUTES = 4 * 60;
 export const OPENING_MINUTES = 8 * 60;
 export const CLOSING_MINUTES = 20 * 60;
 
@@ -34,6 +33,7 @@ export function isWithinBusinessHours({ startsAt, endsAt }: Interval) {
 export function checkBookingTimes(
   requested: Interval,
   now: Date,
+  maxMinutes: number,
 ): BookingError[] {
   if (requested.endsAt <= requested.startsAt) {
     return [{ code: "INVALID_RANGE" }];
@@ -48,8 +48,8 @@ export function checkBookingTimes(
   if (minutes < MIN_DURATION_MINUTES) {
     errors.push({ code: "TOO_SHORT", minMinutes: MIN_DURATION_MINUTES });
   }
-  if (minutes > MAX_DURATION_MINUTES) {
-    errors.push({ code: "TOO_LONG", maxMinutes: MAX_DURATION_MINUTES });
+  if (minutes > maxMinutes) {
+    errors.push({ code: "TOO_LONG", maxMinutes });
   }
   if (!isWithinBusinessHours(requested)) {
     errors.push({ code: "OUTSIDE_BUSINESS_HOURS" });

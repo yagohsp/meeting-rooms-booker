@@ -32,6 +32,7 @@ export async function listRooms(
     id: room.id,
     name: room.name,
     capacity: room.capacity,
+    maxDurationMinutes: room.maxDurationMinutes,
     resources: room.resources.map(({ resource }) => resource.name),
   }));
   return mapped.sort((a, b) =>
@@ -41,7 +42,7 @@ export async function listRooms(
 
 export async function listRoomOptions() {
   const rooms = await prisma.room.findMany({
-    select: { id: true, name: true, capacity: true },
+    select: { id: true, name: true, capacity: true, maxDurationMinutes: true },
   });
   return rooms.sort(byName);
 }
@@ -53,6 +54,7 @@ export async function getRoomForEdit(id: string) {
       id: true,
       name: true,
       capacity: true,
+      maxDurationMinutes: true,
       resources: { select: { resourceId: true } },
     },
   });
@@ -61,6 +63,7 @@ export async function getRoomForEdit(id: string) {
     id: room.id,
     name: room.name,
     capacity: room.capacity,
+    maxDurationMinutes: room.maxDurationMinutes,
     resourceIds: room.resources.map(({ resourceId }) => resourceId),
   };
 }

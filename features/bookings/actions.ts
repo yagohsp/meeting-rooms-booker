@@ -45,7 +45,17 @@ export async function createBooking(
   const { roomId, startsAt, endsAt } = parsed.data;
   const requested = { startsAt, endsAt };
 
-  const timeErrors = checkBookingTimes(requested, new Date());
+  const room = await prisma.room.findUnique({
+    where: { id: roomId },
+    select: { name: true, maxDurationMinutes: true },
+  });
+  if (!room) return fail({ roomId: ["Sala não encontrada."] });
+
+  const timeErrors = checkBookingTimes(
+    requested,
+    new Date(),
+    room.maxDurationMinutes,
+  );
   if (timeErrors.length > 0) {
     return fail({ form: timeErrors.map(bookingErrorMessage) });
   }
@@ -53,12 +63,6 @@ export async function createBooking(
   let result: CreateBookingState;
   try {
     result = await prisma.$transaction(async (tx) => {
-      const room = await tx.room.findUnique({
-        where: { id: roomId },
-        select: { name: true },
-      });
-      if (!room) return fail({ roomId: ["Sala não encontrada."] });
-
       const conflicts = checkOverlap(
         requested,
         await findOverlappingBookings(tx, roomId, startsAt, endsAt),

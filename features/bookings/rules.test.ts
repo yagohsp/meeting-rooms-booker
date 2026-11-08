@@ -15,7 +15,8 @@ const interval = (start: string, end: string): Interval => ({
 });
 const now = at("08:00");
 
-const validate = (requested: Interval) => checkBookingTimes(requested, now);
+const validate = (requested: Interval, maxMinutes = 240) =>
+  checkBookingTimes(requested, now, maxMinutes);
 
 describe("overlaps", () => {
   it("detects intervals that intersect", () => {
@@ -65,11 +66,19 @@ describe("checkBookingTimes", () => {
     });
   });
 
-  it("accepts exactly 4 hours and rejects more", () => {
-    expect(validate(interval("09:00", "13:00"))).toEqual([]);
-    expect(validate(interval("09:00", "13:01"))).toContainEqual({
+  it("accepts a booking up to the room's limit", () => {
+    expect(validate(interval("09:00", "13:00"), 240)).toEqual([]);
+    expect(validate(interval("09:00", "10:00"), 60)).toEqual([]);
+  });
+
+  it("rejects a booking longer than the room's limit", () => {
+    expect(validate(interval("09:00", "13:01"), 240)).toContainEqual({
       code: "TOO_LONG",
       maxMinutes: 240,
+    });
+    expect(validate(interval("09:00", "10:30"), 60)).toContainEqual({
+      code: "TOO_LONG",
+      maxMinutes: 60,
     });
   });
 
@@ -77,6 +86,9 @@ describe("checkBookingTimes", () => {
     expect(
       validate(interval("07:00", "07:05")).map((error) => error.code),
     ).toEqual(["IN_THE_PAST", "TOO_SHORT", "OUTSIDE_BUSINESS_HOURS"]);
+    expect(
+      validate(interval("07:00", "09:00"), 60).map((error) => error.code),
+    ).toEqual(["IN_THE_PAST", "TOO_LONG", "OUTSIDE_BUSINESS_HOURS"]);
   });
 
   it("rejects bookings outside business hours", () => {

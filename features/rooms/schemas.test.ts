@@ -1,13 +1,19 @@
 import { describe, expect, it } from "vitest";
 import { roomInputSchema } from "./schemas";
 
-const valid = { name: "Sala Nova", capacity: "10", resourceIds: ["a", "b"] };
+const valid = {
+  name: "Sala Nova",
+  capacity: "10",
+  maxDurationMinutes: "120",
+  resourceIds: ["a", "b"],
+};
 
 describe("roomInputSchema", () => {
   it("parses a valid room", () => {
     expect(roomInputSchema.parse(valid)).toEqual({
       name: "Sala Nova",
       capacity: 10,
+      maxDurationMinutes: 120,
       resourceIds: ["a", "b"],
     });
   });
@@ -31,6 +37,10 @@ describe("roomInputSchema", () => {
     ["capacity", "2.5"],
     ["capacity", "abc"],
     ["capacity", ""],
+    ["maxDurationMinutes", ""],
+    ["maxDurationMinutes", "10"],
+    ["maxDurationMinutes", "721"],
+    ["maxDurationMinutes", "1.5"],
   ])("rejects an invalid %s (%j)", (field, value) => {
     const result = roomInputSchema.safeParse({ ...valid, [field]: value });
     expect(result.success).toBe(false);

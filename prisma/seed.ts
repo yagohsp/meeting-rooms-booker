@@ -11,24 +11,37 @@ const prisma = new PrismaClient({
 const RESOURCES = ["Projetor", "TV", "Videoconferência", "Quadro branco"];
 
 const ROOMS = [
-  { name: "Sala Ágata", capacity: 4, resources: ["TV", "Quadro branco"] },
+  {
+    name: "Sala Ágata",
+    capacity: 4,
+    maxDurationMinutes: 120,
+    resources: ["TV", "Quadro branco"],
+  },
   {
     name: "Sala Berilo",
     capacity: 6,
+    maxDurationMinutes: 120,
     resources: ["Projetor", "Quadro branco"],
   },
-  { name: "Sala Cristal", capacity: 8, resources: ["TV", "Videoconferência"] },
+  {
+    name: "Sala Cristal",
+    capacity: 8,
+    maxDurationMinutes: 180,
+    resources: ["TV", "Videoconferência"],
+  },
   {
     name: "Sala Diamante",
     capacity: 12,
+    maxDurationMinutes: 240,
     resources: ["Projetor", "Videoconferência", "Quadro branco"],
   },
   {
     name: "Auditório Esmeralda",
     capacity: 30,
+    maxDurationMinutes: 480,
     resources: ["Projetor", "Videoconferência"],
   },
-  { name: "Sala Foco", capacity: 2, resources: [] },
+  { name: "Sala Foco", capacity: 2, maxDurationMinutes: 60, resources: [] },
 ];
 
 const USERS = [
@@ -67,6 +80,7 @@ async function main() {
       data: {
         name: room.name,
         capacity: room.capacity,
+        maxDurationMinutes: room.maxDurationMinutes,
         resources: {
           create: room.resources.map((name) => ({
             resourceId: resources.get(name)!,
