@@ -9,8 +9,12 @@ import { formatDuration } from "@/lib/time";
 
 export const metadata: Metadata = { title: "Administrar salas" };
 
-export default async function AdminRoomsPage() {
+export default async function AdminRoomsPage({
+  searchParams,
+}: PageProps<"/admin/salas">) {
   await requireAdmin();
+  const { sala, excedentes } = await searchParams;
+  const exceeding = Number(excedentes);
   const rooms = await listRooms({ resources: [] }, "name");
 
   return (
@@ -24,6 +28,20 @@ export default async function AdminRoomsPage() {
           </Link>
         }
       />
+
+      {typeof sala === "string" &&
+        Number.isInteger(exceeding) &&
+        exceeding > 0 && (
+          <p
+            role="status"
+            className="rounded-lg border border-brand-orange/40 bg-brand-orange/10 p-3 text-sm"
+          >
+            {sala} foi salva.{" "}
+            {exceeding === 1
+              ? "1 reserva futura passa do novo limite e foi mantida."
+              : `${exceeding} reservas futuras passam do novo limite e foram mantidas.`}
+          </p>
+        )}
 
       <div className="overflow-x-auto rounded-xl border bg-card shadow-card">
         <table className="w-full text-sm">

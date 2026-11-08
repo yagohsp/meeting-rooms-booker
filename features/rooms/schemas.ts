@@ -1,9 +1,10 @@
 import { z } from "zod";
+import { MIN_DURATION_MINUTES } from "@/features/bookings/rules";
+import { formatDuration } from "@/lib/time";
 import {
   MAX_CAPACITY,
   MAX_MAX_DURATION_MINUTES,
   MAX_NAME_LENGTH,
-  MIN_MAX_DURATION_MINUTES,
 } from "./limits";
 
 export const roomInputSchema = z.object({
@@ -36,12 +37,12 @@ export const roomInputSchema = z.object({
       z
         .number()
         .min(
-          MIN_MAX_DURATION_MINUTES,
-          `A duração máxima deve ser de pelo menos ${MIN_MAX_DURATION_MINUTES} minutos.`,
+          MIN_DURATION_MINUTES,
+          `A duração máxima deve ser de pelo menos ${formatDuration(MIN_DURATION_MINUTES)}.`,
         )
         .max(
           MAX_MAX_DURATION_MINUTES,
-          `A duração máxima deve ser de até ${MAX_MAX_DURATION_MINUTES / 60} horas.`,
+          `A duração máxima deve ser de até ${formatDuration(MAX_MAX_DURATION_MINUTES)}.`,
         ),
     ),
   resourceIds: z.array(z.string()).transform((ids) => [...new Set(ids)]),

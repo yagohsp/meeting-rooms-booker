@@ -9,7 +9,7 @@ import { formatDate, formatTimeRange } from "./format";
 import { bookingErrorMessage } from "./messages";
 import { canCancelBooking } from "./permissions";
 import { findOverlappingBookings } from "./queries";
-import { checkBookingTimes, checkMaxDuration, checkOverlap } from "./rules";
+import { checkBookingTimes, checkOverlap } from "./rules";
 import { bookingInputSchema, type BookingInput } from "./schemas";
 
 export type FormErrors = Partial<Record<keyof BookingInput | "form", string[]>>;
@@ -45,7 +45,17 @@ export async function createBooking(
   const { roomId, startsAt, endsAt } = parsed.data;
   const requested = { startsAt, endsAt };
 
-  const timeErrors = checkBookingTimes(requested, new Date());
+  const room = await prisma.room.findUnique({
+    where: { id: roomId },
+    select: { name: true, maxDurationMinutes: true },
+  });
+  if (!room) return fail({ roomId: ["Sala não encontrada."] });
+
+  const timeErrors = checkBookingTimes(
+    requested,
+    new Date(),
+    room.maxDurationMinutes,
+  );
   if (timeErrors.length > 0) {
     return fail({ form: timeErrors.map(bookingErrorMessage) });
   }
@@ -53,21 +63,12 @@ export async function createBooking(
   let result: CreateBookingState;
   try {
     result = await prisma.$transaction(async (tx) => {
-      const room = await tx.room.findUnique({
-        where: { id: roomId },
-        select: { name: true, maxDurationMinutes: true },
-      });
-      if (!room) return fail({ roomId: ["Sala não encontrada."] });
-
-      const errors = [
-        ...checkMaxDuration(requested, room.maxDurationMinutes),
-        ...checkOverlap(
-          requested,
-          await findOverlappingBookings(tx, roomId, startsAt, endsAt),
-        ),
-      ];
-      if (errors.length > 0) {
-        return fail({ form: errors.map(bookingErrorMessage) });
+      const conflicts = checkOverlap(
+        requested,
+        await findOverlappingBookings(tx, roomId, startsAt, endsAt),
+      );
+      if (conflicts.length > 0) {
+        return fail({ form: conflicts.map(bookingErrorMessage) });
       }
 
       await tx.booking.create({

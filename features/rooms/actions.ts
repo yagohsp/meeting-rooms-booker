@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getCurrentUser, isAdmin } from "@/features/auth/session";
+import { countUpcomingBookingsLongerThan } from "@/features/bookings/queries";
 import { prisma } from "@/lib/db";
 import { formString } from "@/lib/forms";
 import { Prisma } from "@/lib/generated/prisma/client";
@@ -86,5 +87,17 @@ export async function saveRoom(
   }
 
   revalidatePath("/", "layout");
-  redirect("/admin/salas");
+
+  const exceeding = roomId
+    ? await countUpcomingBookingsLongerThan(
+        roomId,
+        maxDurationMinutes,
+        new Date(),
+      )
+    : 0;
+  redirect(
+    exceeding > 0
+      ? `/admin/salas?sala=${encodeURIComponent(name)}&excedentes=${exceeding}`
+      : "/admin/salas",
+  );
 }

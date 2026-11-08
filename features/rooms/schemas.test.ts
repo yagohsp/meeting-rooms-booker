@@ -39,7 +39,7 @@ describe("roomInputSchema", () => {
     ["capacity", ""],
     ["maxDurationMinutes", ""],
     ["maxDurationMinutes", "10"],
-    ["maxDurationMinutes", "1441"],
+    ["maxDurationMinutes", "721"],
     ["maxDurationMinutes", "1.5"],
   ])("rejects an invalid %s (%j)", (field, value) => {
     const result = roomInputSchema.safeParse({ ...valid, [field]: value });

@@ -9,7 +9,7 @@ export function bookingErrorMessage(error: BookingError): string {
     case "IN_THE_PAST":
       return "Não é possível reservar no passado.";
     case "TOO_SHORT":
-      return `A reserva deve ter no mínimo ${error.minMinutes} minutos.`;
+      return `A reserva deve ter no mínimo ${formatDuration(error.minMinutes)}.`;
     case "TOO_LONG":
       return `Nesta sala, a reserva deve ter no máximo ${formatDuration(error.maxMinutes)}.`;
     case "OVERLAP":

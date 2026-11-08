@@ -16,6 +16,7 @@ export function overlaps(a: Interval, b: Interval): boolean {
 export function checkBookingTimes(
   requested: Interval,
   now: Date,
+  maxMinutes: number,
 ): BookingError[] {
   if (requested.endsAt <= requested.startsAt) {
     return [{ code: "INVALID_RANGE" }];
@@ -30,17 +31,11 @@ export function checkBookingTimes(
   if (minutes < MIN_DURATION_MINUTES) {
     errors.push({ code: "TOO_SHORT", minMinutes: MIN_DURATION_MINUTES });
   }
+  if (minutes > maxMinutes) {
+    errors.push({ code: "TOO_LONG", maxMinutes });
+  }
 
   return errors;
-}
-
-export function checkMaxDuration(
-  requested: Interval,
-  maxMinutes: number,
-): BookingError[] {
-  const minutes =
-    (requested.endsAt.getTime() - requested.startsAt.getTime()) / 60_000;
-  return minutes > maxMinutes ? [{ code: "TOO_LONG", maxMinutes }] : [];
 }
 
 export function checkOverlap(

@@ -37,11 +37,12 @@ describe("zonedDateTimeToUtc", () => {
 
 describe("formatDuration", () => {
   it.each([
-    [15, "15 minutos"],
-    [60, "1 hora"],
+    [15, "15 min"],
+    [45, "45 min"],
+    [60, "1h"],
     [90, "1h30"],
-    [240, "4 horas"],
-    [1440, "24 horas"],
+    [240, "4h"],
+    [720, "12h"],
   ])("formats %i minutes as %j", (minutes, expected) => {
     expect(formatDuration(minutes)).toBe(expected);
   });

@@ -7,12 +7,12 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { SaveRoomState } from "../actions";
+import { MIN_DURATION_MINUTES } from "@/features/bookings/rules";
 import {
   DEFAULT_MAX_DURATION_MINUTES,
   MAX_CAPACITY,
   MAX_MAX_DURATION_MINUTES,
   MAX_NAME_LENGTH,
-  MIN_MAX_DURATION_MINUTES,
 } from "../limits";
 import type { RoomInput } from "../schemas";
 
@@ -85,9 +85,8 @@ export function RoomForm({ action, resources, initialValues }: Props) {
           name="maxDurationMinutes"
           type="number"
           required
-          min={MIN_MAX_DURATION_MINUTES}
+          min={MIN_DURATION_MINUTES}
           max={MAX_MAX_DURATION_MINUTES}
-          step={15}
           inputMode="numeric"
           defaultValue={
             values?.maxDurationMinutes ?? DEFAULT_MAX_DURATION_MINUTES
