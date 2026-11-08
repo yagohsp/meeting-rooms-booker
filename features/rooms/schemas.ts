@@ -5,6 +5,7 @@ export const roomInputSchema = z.object({
   name: z
     .string()
     .trim()
+    .min(1, "Informe o nome da sala.")
     .min(2, "O nome deve ter pelo menos 2 caracteres.")
     .max(
       MAX_NAME_LENGTH,
@@ -12,6 +13,7 @@ export const roomInputSchema = z.object({
     ),
   capacity: z
     .string()
+    .min(1, "Informe a capacidade.")
     .regex(/^\d+$/, "Informe um número inteiro.")
     .transform(Number)
     .pipe(

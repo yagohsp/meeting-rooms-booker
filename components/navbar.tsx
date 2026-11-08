@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { getCurrentUser, isAdmin } from "@/features/auth/session";
+import { NavLinks } from "./nav-links";
 
 const LINKS = [
   { href: "/salas", label: "Salas" },
@@ -14,18 +14,7 @@ export async function Navbar() {
 
   return (
     <nav aria-label="Principal">
-      <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
-        {links.map((link) => (
-          <li key={link.href}>
-            <Link
-              href={link.href}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              {link.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <NavLinks links={links} />
     </nav>
   );
 }

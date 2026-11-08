@@ -44,7 +44,7 @@ export function RoomCard({ room }: { room: RoomCardData }) {
       </CardContent>
       <CardFooter>
         <Link
-          href={`/reservar?sala=${room.id}`}
+          href={`/reservar?sala=${room.id}&origem=salas`}
           className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
         >
           Reservar

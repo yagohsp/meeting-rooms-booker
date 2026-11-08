@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageHeader } from "@/components/page-header";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/features/auth/session";
 import { saveRoom } from "@/features/rooms/actions";
@@ -20,7 +21,7 @@ export default async function EditRoomPage({
 
   return (
     <div className="mx-auto flex max-w-md flex-col gap-6">
-      <h1 className="text-2xl font-semibold">Editar {room.name}</h1>
+      <PageHeader eyebrow="Administração" title={`Editar ${room.name}`} />
       <RoomForm
         action={saveRoom.bind(null, room.id)}
         resources={resources}

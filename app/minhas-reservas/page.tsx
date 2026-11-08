@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import { PageHeader } from "@/components/page-header";
 import Link from "next/link";
-import { getCurrentUser } from "@/features/auth/session";
+import { requireUser } from "@/features/auth/session";
 import { CancelBookingButton } from "@/features/bookings/components/cancel-booking-button";
 import { formatDate, formatTimeRange } from "@/features/bookings/format";
 import {
@@ -13,19 +14,7 @@ import {
 export const metadata: Metadata = { title: "Minhas reservas" };
 
 export default async function MyBookingsPage() {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    return (
-      <MyBookingsLayout>
-        <p className="text-muted-foreground">
-          Escolha um usuário em <strong>Entrar como</strong>, no topo da página,
-          para ver suas reservas.
-        </p>
-      </MyBookingsLayout>
-    );
-  }
-
+  const user = await requireUser();
   const now = new Date();
   const [upcoming, history] = await Promise.all([
     listUpcomingBookings(user.id, now),
@@ -33,7 +22,8 @@ export default async function MyBookingsPage() {
   ]);
 
   return (
-    <MyBookingsLayout>
+    <div className="mx-auto flex max-w-2xl flex-col gap-6">
+      <PageHeader eyebrow="Agenda" title="Minhas reservas" />
       <section
         aria-labelledby="upcoming-heading"
         className="flex flex-col gap-3"
@@ -42,7 +32,7 @@ export default async function MyBookingsPage() {
           Próximas
         </h2>
         {upcoming.length > 0 ? (
-          <ul className="flex flex-col divide-y rounded-lg border">
+          <ul className="flex flex-col divide-y rounded-xl border bg-card shadow-card">
             {upcoming.map((booking) => (
               <BookingRow
                 key={booking.id}
@@ -64,7 +54,7 @@ export default async function MyBookingsPage() {
             Nenhuma reserva futura.{" "}
             <Link
               href="/salas"
-              className="text-primary underline-offset-4 hover:underline"
+              className="text-brand-link underline-offset-4 hover:underline"
             >
               Reservar uma sala
             </Link>
@@ -85,7 +75,7 @@ export default async function MyBookingsPage() {
               Mostrando as {BOOKING_HISTORY_LIMIT} mais recentes.
             </p>
           )}
-          <ul className="flex flex-col divide-y rounded-lg border text-muted-foreground">
+          <ul className="flex flex-col divide-y rounded-xl border bg-card text-muted-foreground shadow-card">
             {history.map((booking) => (
               <BookingRow
                 key={booking.id}
@@ -100,7 +90,7 @@ export default async function MyBookingsPage() {
           </ul>
         </section>
       )}
-    </MyBookingsLayout>
+    </div>
   );
 }
 
@@ -122,14 +112,5 @@ function BookingRow({
       </div>
       {action}
     </li>
-  );
-}
-
-function MyBookingsLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-6">
-      <h1 className="text-2xl font-semibold">Minhas reservas</h1>
-      {children}
-    </div>
   );
 }

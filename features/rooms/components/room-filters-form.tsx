@@ -15,6 +15,7 @@ export function RoomFiltersForm({ filters, resources }: Props) {
   return (
     <Form
       action="/salas"
+      noValidate
       key={JSON.stringify(filters)}
       className="flex flex-col gap-5"
     >

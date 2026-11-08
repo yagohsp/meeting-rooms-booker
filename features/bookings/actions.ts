@@ -50,8 +50,9 @@ export async function createBooking(
     return fail({ form: timeErrors.map(bookingErrorMessage) });
   }
 
+  let result: CreateBookingState;
   try {
-    return await prisma.$transaction(async (tx) => {
+    result = await prisma.$transaction(async (tx) => {
       const room = await tx.room.findUnique({
         where: { id: roomId },
         select: { name: true },
@@ -81,6 +82,12 @@ export async function createBooking(
       form: ["Não foi possível concluir a reserva. Tente novamente."],
     });
   }
+
+  if (result.status === "success") {
+    revalidatePath("/reservar");
+    revalidatePath("/minhas-reservas");
+  }
+  return result;
 }
 
 export type CancelBookingState = { error?: string };
@@ -126,5 +133,6 @@ export async function cancelBooking(
   }
 
   revalidatePath("/minhas-reservas");
+  revalidatePath("/reservar");
   return {};
 }

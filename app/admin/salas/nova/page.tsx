@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageHeader } from "@/components/page-header";
 import { requireAdmin } from "@/features/auth/session";
 import { saveRoom } from "@/features/rooms/actions";
 import { RoomForm } from "@/features/rooms/components/room-form";
@@ -12,7 +13,7 @@ export default async function NewRoomPage() {
 
   return (
     <div className="mx-auto flex max-w-md flex-col gap-6">
-      <h1 className="text-2xl font-semibold">Nova sala</h1>
+      <PageHeader eyebrow="Administração" title="Nova sala" />
       <RoomForm action={saveRoom.bind(null, null)} resources={resources} />
     </div>
   );
