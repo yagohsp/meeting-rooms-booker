@@ -28,6 +28,7 @@ export default async function EditRoomPage({
         initialValues={{
           name: room.name,
           capacity: String(room.capacity),
+          maxDurationMinutes: String(room.maxDurationMinutes),
           resourceIds: room.resourceIds,
         }}
       />

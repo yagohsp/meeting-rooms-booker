@@ -5,6 +5,7 @@ import { cn } from "cn";
 import { buttonVariants } from "@/components/ui/button";
 import { requireAdmin } from "@/features/auth/session";
 import { listRooms } from "@/features/rooms/queries";
+import { formatDuration } from "@/lib/time";
 
 export const metadata: Metadata = { title: "Administrar salas" };
 
@@ -30,6 +31,7 @@ export default async function AdminRoomsPage() {
             <tr>
               <th className="px-4 py-3 font-medium">Sala</th>
               <th className="px-4 py-3 font-medium">Capacidade</th>
+              <th className="px-4 py-3 font-medium">Duração máx.</th>
               <th className="px-4 py-3 font-medium">Recursos</th>
               <th className="px-4 py-3">
                 <span className="sr-only">Ações</span>
@@ -41,6 +43,9 @@ export default async function AdminRoomsPage() {
               <tr key={room.id}>
                 <td className="px-4 py-3 font-medium">{room.name}</td>
                 <td className="px-4 py-3">{room.capacity}</td>
+                <td className="px-4 py-3">
+                  {formatDuration(room.maxDurationMinutes)}
+                </td>
                 <td className="px-4 py-3 text-muted-foreground">
                   {room.resources.join(", ") || "—"}
                 </td>
