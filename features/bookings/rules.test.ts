@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   checkBookingTimes,
   checkOverlap,
+  isWithinBusinessHours,
   overlaps,
   type Interval,
 } from "./rules";
@@ -75,7 +76,53 @@ describe("checkBookingTimes", () => {
   it("reports every broken time rule at once", () => {
     expect(
       validate(interval("07:00", "07:05")).map((error) => error.code),
-    ).toEqual(["IN_THE_PAST", "TOO_SHORT"]);
+    ).toEqual(["IN_THE_PAST", "TOO_SHORT", "OUTSIDE_BUSINESS_HOURS"]);
+  });
+
+  it("rejects bookings outside business hours", () => {
+    expect(validate(interval("19:30", "20:30"))).toContainEqual({
+      code: "OUTSIDE_BUSINESS_HOURS",
+    });
+  });
+});
+
+describe("isWithinBusinessHours", () => {
+  it("accepts weekdays from 08:00 to 20:00", () => {
+    expect(isWithinBusinessHours(interval("08:00", "09:00"))).toBe(true);
+    expect(isWithinBusinessHours(interval("19:00", "20:00"))).toBe(true);
+    expect(
+      isWithinBusinessHours({
+        startsAt: at("09:00", "2026-11-13"),
+        endsAt: at("10:00", "2026-11-13"),
+      }),
+    ).toBe(true);
+  });
+
+  it("rejects bookings that start before 08:00 or end after 20:00", () => {
+    expect(isWithinBusinessHours(interval("07:59", "09:00"))).toBe(false);
+    expect(isWithinBusinessHours(interval("19:00", "20:01"))).toBe(false);
+  });
+
+  it("rejects weekends", () => {
+    const saturday = {
+      startsAt: at("09:00", "2026-11-14"),
+      endsAt: at("10:00", "2026-11-14"),
+    };
+    const sunday = {
+      startsAt: at("09:00", "2026-11-15"),
+      endsAt: at("10:00", "2026-11-15"),
+    };
+    expect(isWithinBusinessHours(saturday)).toBe(false);
+    expect(isWithinBusinessHours(sunday)).toBe(false);
+  });
+
+  it("rejects bookings that cross midnight", () => {
+    expect(
+      isWithinBusinessHours({
+        startsAt: at("23:00", "2026-11-10"),
+        endsAt: at("00:30", "2026-11-11"),
+      }),
+    ).toBe(false);
   });
 });
 
